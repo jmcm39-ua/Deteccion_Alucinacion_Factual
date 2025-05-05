@@ -1,23 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Texto Etiquetado</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Incluir Chart.js -->
 </head>
 <body>
     <div id="titulo">Detector de Alucinación en Textos generados por IA</div>
     <div id="contenedor">
         <textarea id="textoInput" rows="4" placeholder="Introduce el texto aquí..."></textarea><br>
-        <select id="modeloSelect">
-            <option value="0">Modelo 0</option>
-            <option value="1">Modelo 1</option>
-            <option value="2">Modelo 2</option>
-        </select><br><br> 
+
         <button id="enviarBtn">Enviar</button>
+        
         <div id="leyenda">
             <span class="circulo-verde"></span> Alucinación factual: la IA ha generado contenido que contradice el texto.
         </div>
+
+        <div id="resumen"></div>
+
+        <!-- Spinner de carga -->
+        <div id="spinner" class="spinner" style="display: none;"></div>
+        <p id="spinner-texto" class="puntos" style="text-align: center; display: none;">Analizando<span class="puntos"></span></p>
+
         <div id="resultado"></div>
+
+        <!-- Gráficas -->
+        <div id="gráficas" style="display: none; margin-top: 30px;">
+            <div class="grafico">
+                <canvas id="graficoCorrectas"></canvas>
+                <p>Correctas</p>
+            </div>
+            <div class="grafico">
+                <canvas id="graficoNeutrales"></canvas>
+                <p>Neutrales</p>
+            </div>
+            <div class="grafico">
+                <canvas id="graficoContradicciones"></canvas>
+                <p>Contradicciones</p>
+            </div>
+        </div>
+
         <script src="script.js"></script>
     </div>
 </body>

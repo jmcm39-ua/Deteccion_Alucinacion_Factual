@@ -5,6 +5,12 @@ from difflib import get_close_matches
 from huggingface_hub import login
 import requests
 from difflib import get_close_matches
+import sys
+import json
+import warnings
+warnings.filterwarnings("ignore")
+from transformers.utils import logging
+logging.set_verbosity_error()
 
 
 
@@ -70,31 +76,25 @@ def extraer_sujeto(oracion):
 
 #Función de búsqueda de entidades
 def buscar_entidad_wikidata(nombre):
-    try:
-        print(f"Buscando entidad en Wikidata para: {nombre}")
+        #print(f"Buscando entidad en Wikidata para: {nombre}")
         
-        url = f"https://www.wikidata.org/w/api.php?action=wbsearchentities&search={nombre}&language=es&format=json"
-        response = requests.get(url)
-        data = response.json()
+    url = f"https://www.wikidata.org/w/api.php?action=wbsearchentities&search={nombre}&language=es&format=json"
+    response = requests.get(url)
+    data = response.json()
 
-        if 'search' in data and data['search']:
-            best_match = data['search'][0]
-            entity_id = best_match['id']
-            label = best_match['label']
-            
-            url_entity = f"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={entity_id}&sites=wikidata&props=descriptions&languages=es&format=json"
-            response_entity = requests.get(url_entity)
-            data_entity = response_entity.json()
+    if 'search' in data and data['search']:
+        best_match = data['search'][0]
+        entity_id = best_match['id']
+        label = best_match['label']
+        
+        url_entity = f"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={entity_id}&sites=wikidata&props=descriptions&languages=es&format=json"
+        response_entity = requests.get(url_entity)
+        data_entity = response_entity.json()
 
-            description = data_entity.get('entities', {}).get(entity_id, {}).get('descriptions', {}).get('es', {}).get('value', 'Descripción no disponible')
+        description = data_entity.get('entities', {}).get(entity_id, {}).get('descriptions', {}).get('es', {}).get('value', 'Descripción no disponible')
 
-            print(f"Entidad encontrada: {label} ({entity_id})")
-            return entity_id, label, description
-        else:
-            print(f"No se encontraron resultados en Wikidata para {nombre}")
-    
-    except Exception as e:
-        print(f"Error en la búsqueda de entidad: {e}")
+        #print(f"Entidad encontrada: {label} ({entity_id})")
+        return entity_id, label, description
     
     return None, None, None
 
@@ -106,19 +106,19 @@ def obtener_tipo_entidad(qid):
         data = response.json()
         
         if 'entities' not in data or qid not in data['entities']:
-            print(f"No se encontraron datos para el QID: {qid}")
+            #print(f"No se encontraron datos para el QID: {qid}")
             return []
 
         claims = data.get("entities", {}).get(qid, {}).get("claims", {})
 
         if "P31" in claims:
             tipos = [c.get('mainsnak', {}).get('datavalue', {}).get('value', {}).get('id') for c in claims["P31"]]
-            print(f"Tipos para {qid}: {tipos}")
+            #print(f"Tipos para {qid}: {tipos}")
             return tipos
 
         return []
     except Exception as e:
-        print(f"Error al obtener tipo de entidad: {e}")
+        #print(f"Error al obtener tipo de entidad: {e}")
         return []
     
 #Función de obtención de label
@@ -135,22 +135,19 @@ def obtener_label(QID, idioma='es'):
 
 #Función de obtención de fechas
 def obtener_fecha_publicacion(qid_obra):
-    try:
-        url = f"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={qid_obra}&format=json&props=claims"
-        response = requests.get(url)
-        data = response.json()
-        claims = data.get('entities', {}).get(qid_obra, {}).get('claims', {})
-        if 'P577' in claims:
-            fecha = claims['P577'][0].get('mainsnak', {}).get('datavalue', {}).get('value', {}).get('time', '')
-            return fecha
-    except Exception as e:
-        print(f"Error al obtener fecha de publicación de {qid_obra}: {e}")
+    url = f"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={qid_obra}&format=json&props=claims"
+    response = requests.get(url)
+    data = response.json()
+    claims = data.get('entities', {}).get(qid_obra, {}).get('claims', {})
+    if 'P577' in claims:
+        fecha = claims['P577'][0].get('mainsnak', {}).get('datavalue', {}).get('value', {}).get('time', '')
+        return fecha
     return None
 
 #Función de obtención de hechos
 def recuperar_hechos(qid):
     try:
-        print(f"Recuperando hechos para la entidad: {qid}")
+        #print(f"Recuperando hechos para la entidad: {qid}")
 
         url = f"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={qid}&sites=wikidata&props=claims|descriptions&format=json"
         response = requests.get(url)
@@ -264,13 +261,10 @@ def recuperar_hechos(qid):
                     elif isinstance(datavalue, str):
                         hechos.append(f"{descripcion}: {datavalue}")
 
-        if not hechos:
-            print(f"No se encontraron hechos para la entidad {qid}")
-
         return hechos
 
     except Exception as e:
-        print(f"Error al recuperar hechos: {e}")
+        #print(f"Error al recuperar hechos: {e}")
         return []
 
 
@@ -531,10 +525,12 @@ def analizar_texto(texto):
     entidad_anterior = None
     oracion_anterior = None
     hechos_anterior = []
+    numero_oraciones = 0
 
     for oracion in oraciones:
         if oracion != "":
-            print(f"\n--- Analizando oración ---\n{oracion}")
+            numero_oraciones += 1
+            #print(f"\n--- Analizando oración ---\n{oracion}")
             sujeto = extraer_sujeto(oracion)
 
             if sujeto:
@@ -567,15 +563,52 @@ def analizar_texto(texto):
                 "confianza": probs
             })
 
-            print(f"Entidad     : {sujeto}")
-            print(f"Hechos      : {hechos}")
-            print(f"Oracion      : {oracion_datos}")
-            print(f"Predicción  : {pred} | Confianza: {probs}")
+            #print(f"Entidad     : {sujeto}")
+            #print(f"Hechos      : {hechos}")
+            #print(f"Oracion      : {oracion_datos}")
+            #print(f"Predicción  : {pred} | Confianza: {probs}")
 
-    return resultados
+    return resultados, numero_oraciones
+
+def procesar_texto(texto):
+    resultados, numero_oraciones = analizar_texto(texto)
+
+    conteo = {
+        "contradiction": 0,
+        "neutral": 0,
+        "entailment": 0
+    }
+
+    oraciones_etiquetadas = []
+
+    for resultado in resultados:
+        pred = resultado["prediccion"]
+        conteo[pred] += 1
+
+        oracion = resultado["oracion"]
+
+        if pred == "contradiction":
+            oracion = f'<span class="subrayado-contradiction">{oracion}</span>'
+        elif pred == "neutral":
+            oracion = f'<span class="subrayado-neutral">{oracion}</span>'
+
+        oraciones_etiquetadas.append(oracion)
+
+    texto_etiquetado = ' '.join(oraciones_etiquetadas)
+
+    return {
+        "total_oraciones": numero_oraciones,
+        "n_contradiccion": conteo["contradiction"],
+        "n_neutral": conteo["neutral"],
+        "n_entailment": conteo["entailment"],
+        "texto_etiquetado": texto_etiquetado
+    }
+
 
 # Ejemplo de uso
 if __name__ == "__main__":
+
+    '''
     texto = """
     GitHub fue fundado por Tom Preston-Werner, Chris Wanstrath, PJ Hyett y Scott Chacon en 2007.
     GitHub es una plataforma de desarrollo colaborativo de software y un servicio de control de versiones usando Git.
@@ -588,3 +621,8 @@ if __name__ == "__main__":
     Tierra gira alrededor del Sol.
     """
     analizar_texto(texto)
+    '''
+
+    texto = sys.stdin.read()
+    resultado = procesar_texto(texto)
+    print(json.dumps(resultado))

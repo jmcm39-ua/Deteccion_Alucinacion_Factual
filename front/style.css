@@ -33,11 +33,18 @@ body {
 }
 
 textarea {
-    width: 80%;
-    padding: 10px;
-    margin-bottom: 10px;
+    width: 100%;
+    height: 300px; /* Tamaño fijo en altura */
+    padding: 15px;
+    font-size: 1.2em; /* Letra más grande */
+    font-family: 'Georgia', serif; /* Fuente más elegante */
+    line-height: 1.5;
+    resize: none; /* Opcional: para desactivar el redimensionado manual */
+    overflow-y: auto; /* Barra lateral cuando el contenido excede el tamaño */
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    background-color: #ffffff;
 }
 
 #leyenda {
@@ -88,15 +95,18 @@ select:focus {
 }
 
 button {
-    padding: 12px 24px;
+    padding: 14px 28px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 1em;
+    border-radius: 8px;
+    font-size: 1.1em;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-bottom: 20px;
+    margin-top: 30px; /* Más espacio respecto al texto */
+    margin-bottom: 30px;
+    width: 100%; /* Hace que el botón ocupe todo el ancho del contenedor */
+    max-width: 300px; /* Para que no sea exageradamente ancho en pantallas grandes */
 }
 
 button:hover {
@@ -118,4 +128,83 @@ button:hover {
     animation-fill-mode: forwards;
     margin-bottom: 50px;
 }
+
+.subrayado-contradiction {
+    background-color: #a8e0a8; /* Color verde claro */
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: black; /* Asegura que el texto sea legible */
+}
+
+/* Estilo para neutral */
+.subrayado-neutral {
+    background-color: #d3d3d3; /* Color gris claro */
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: black; /* Asegura que el texto sea legible */
+}
+
+
+/* Spinner */
+.spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Puntos animados */
+#spinner-texto::after {
+    content: '';
+    animation: puntos 1.5s steps(4, end) infinite;
+}
+
+@keyframes puntos {
+    0%   { content: ''; }
+    25%  { content: '.'; }
+    50%  { content: '..'; }
+    75%  { content: '...'; }
+    100% { content: ''; }
+}
+
+/* Gráficas */
+#graficoCorrectas, #graficoNeutrales, #graficoContradicciones {
+    max-width: 300px;
+    margin: 20px auto;
+}
+
+.grafico {
+    display: inline-block;
+    width: 30%;
+    text-align: center;
+}
+
+.grafico canvas {
+    width: 100%;
+    height: auto;
+}
+
+.grafico p {
+    margin-top: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+/* Colores pastel */
+#gráficas {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+}
+
 
