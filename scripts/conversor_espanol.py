@@ -10,8 +10,8 @@ client = AzureOpenAI(
     api_key="Tu token"
 )
 
-input_file = "dataset_ingles.jsonl"
-output_file = "dataset_espanol.jsonl"
+input_file = "../datasets/dataset_ingles.jsonl"
+output_file = "../datasets/dataset_espanol.jsonl"
 
 # Función para traducir con Azure OpenAI
 def traducir_con_azure_openai(texto):
