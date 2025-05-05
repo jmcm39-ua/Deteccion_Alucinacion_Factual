@@ -11,7 +11,7 @@ client = AzureOpenAI(
 )
 
 input_file = "../datasets/dataset_ingles.jsonl"
-output_file = "../datasets/dataset_espanol.jsonl"
+output_file = "../datasets/dataset_espanol_2.jsonl"
 
 # Función para traducir con Azure OpenAI
 def traducir_con_azure_openai(texto):
