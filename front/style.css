@@ -1,0 +1,121 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+#titulo {
+    background-color: #e0f2fe;
+    padding: 30px;
+    width: auto;
+    text-align: center;
+    box-sizing: border-box;
+    font-size: 2em;
+    font-weight: bold;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeIn 1s ease-out forwards;
+    margin-top: 50px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+textarea {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#leyenda {
+    display: none; /* Inicialmente oculta */
+    align-items: center;
+    margin-bottom: 20px; /* Margen inferior */
+}
+
+.circulo-verde {
+    width: 15px;
+    height: 15px;
+    background-color: #a8e0a8;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+#resultado {
+    width: 80%;
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    word-wrap: break-word;
+    display: none;
+}
+
+.subrayado {
+    background-color: #a8e0a8;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+select {
+    width: 82%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: white;
+    margin-bottom: 10px;
+    transition: border 0.3s;
+}
+
+select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button {
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#contenedor {
+
+    padding: 30px;
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+    box-sizing: border-box;
+    border-radius: 10px;
+    animation: fadeIn 1s ease-out forwards;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation-delay: 0.5s;
+    animation-fill-mode: forwards;
+    margin-bottom: 50px;
+}
+

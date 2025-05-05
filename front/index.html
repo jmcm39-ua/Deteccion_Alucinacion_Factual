@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Texto Etiquetado</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="titulo">Detector de Alucinación en Textos generados por IA</div>
+    <div id="contenedor">
+        <textarea id="textoInput" rows="4" placeholder="Introduce el texto aquí..."></textarea><br>
+        <select id="modeloSelect">
+            <option value="0">Modelo 0</option>
+            <option value="1">Modelo 1</option>
+            <option value="2">Modelo 2</option>
+        </select><br><br> 
+        <button id="enviarBtn">Enviar</button>
+        <div id="leyenda">
+            <span class="circulo-verde"></span> Alucinación factual: la IA ha generado contenido que contradice el texto.
+        </div>
+        <div id="resultado"></div>
+        <script src="script.js"></script>
+    </div>
+</body>
+</html>
