@@ -78,20 +78,46 @@ body {
     border-radius: 50%;
     margin-right: 5px;
   }
+
+  .circulo-azul {
+    width: 15px;
+    height: 15px;
+    background-color: #add8e6;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
+  .circulo-amarillo {
+    width: 15px;
+    height: 15px;
+    background-color: #f0e68c;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
   
   #resultado {
     width: 85%;
     margin: 20px auto;
     padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: white;
     word-wrap: break-word;
+    font-size: 1.5em;
+    font-family: 'Georgia', serif;
+    line-height: 1.8;
+  }
+
+  #resultado-final {
+    width: 85%;
+    margin: 20px auto;
+    padding: 20px;
+    word-wrap: break-word;
+    font-size: 2.0em;
+    font-family: 'Georgia', serif;
+    line-height: 2.5;
   }
   
   /* Subrayados */
   .subrayado-contradiction {
-    background-color: #a8e0a8;
+    background-color: #add8e6;
     padding: 2px 4px;
     border-radius: 4px;
     font-weight: bold;
@@ -99,7 +125,7 @@ body {
   }
   
   .subrayado-neutral {
-    background-color: #d3d3d3;
+    background-color: #f0e68c;
     padding: 2px 4px;
     border-radius: 4px;
     font-weight: bold;

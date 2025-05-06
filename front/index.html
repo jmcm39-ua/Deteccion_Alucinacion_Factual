@@ -28,13 +28,26 @@
     <button id="enviarBtn" class="btn btn-primary">Enviar</button>
   </div>
 
+    <!-- Resultado -->
+    <div id="resultado-final" style="display: none; justify-content: center;"></div>
+
+
+<div style="display: flex; justify-content: center;">
 <h3 id="titulo-1" class="text-center fw-semibold mt-5" style="display: none;">Texto Comprobado</h3>
+</div>
 
   <div id="leyenda" class="d-flex align-items-center justify-content-center mb-3" style="display: none;">
-    <div id="aux-leyenda" style="display: none;">
-        <span class="circulo-verde"></span>
-        <span class="ms-2">Alucinación factual: la IA ha generado contenido que contradice el texto.</span>
+    <div id="aux-leyenda" style="display: flex; justify-content: center; flex-direction: column;">
+      <div id="leyenda-1"style="display: none; justify-content: center; padding: 5px;">
+        <span class="circulo-azul"></span>
+        <span class="ms-2">Alucinación factual: la IA ha generado contenido que contradice hechos factuales.</span>
+      </div>
+       <div id="leyenda-2" style="display: none; justify-content: center; padding: 5px;">
+        <span class="circulo-amarillo"></span>
+        <span class="ms-2">Neutro: No se ha podido comprobar si está respaldado por un hecho factual.</span>
+      </div>
     </div>
+        
   </div>
   
 
@@ -47,7 +60,9 @@
   <div id="resultado" style="display: none;"></div>
 
 <!-- Título de sección: Resultados Desglosados -->
-<h3 id="titulo-2" class="text-center fw-semibold mt-5" style="display: none;">Resultados Desglosados</h3>
+<div style="display: flex; justify-content: center;">
+  <h3 id="titulo-2" class="text-center fw-semibold mt-5" style="display: none;">Resultados Desglosados</h3>
+</div>
 
 <!-- Gráficas -->
 <div id="gráficas" class="d-flex flex-wrap justify-content-around mt-4" style="display: none;">
@@ -66,8 +81,9 @@
 </div>
 
 <!-- Título de sección: Distribución Global -->
-<h3 id="titulo-3" class="text-center fw-semibold mt-5" style="display: none;">Distribución Global</h3>
-
+<div style="display: flex; justify-content: center;">
+  <h3 id="titulo-3" class="text-center fw-semibold mt-5" style="display: none;">Distribución Global</h3>
+</div>
 <!-- Gráfica resumen + datos centrado -->
 <div id="resumen-global" class="d-flex justify-content-center align-items-center gap-3 mt-4" style="display: none;">
   <!-- Gráfica doughnut -->

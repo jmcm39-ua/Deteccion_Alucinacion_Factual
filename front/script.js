@@ -63,7 +63,10 @@ function crearGrafico(id, label, porcentaje, color) {
 document.getElementById('enviarBtn').addEventListener('click', function () {
     const texto = document.getElementById('textoInput').value;
     const resultadoDiv = document.getElementById('resultado');
+    const resultadoFinalDiv = document.getElementById('resultado-final');
     const leyendaDiv = document.getElementById('leyenda');
+    const leyenda1Div = document.getElementById('leyenda-1');
+    const leyenda2Div = document.getElementById('leyenda-2');
     const leyendaauxDiv = document.getElementById('aux-leyenda');
     const spinner = document.getElementById('spinner');
     const spinnerTexto = document.getElementById('spinner-texto');
@@ -79,7 +82,10 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
 
     // Ocultar todo y mostrar spinner
     resultadoDiv.style.display = 'none';
+    resultadoFinalDiv.style.display = 'none';
     leyendaDiv.style.display = 'none';
+    leyenda1Div.style.display = 'none';
+    leyenda2Div.style.display = 'none';
     leyendaauxDiv.style.display = 'none';
     graficasDiv.style.display = 'none';
     graficasCorrectasDiv.style.display = 'none';
@@ -105,6 +111,8 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
 
         titulo1Div.style.display = 'block';
         leyendaDiv.style.display = 'flex';
+        leyenda1Div.style.display = 'flex';
+        leyenda2Div.style.display = 'flex';
         leyendaauxDiv.style.display = 'flex';
         resultadoDiv.style.display = 'block';
 
@@ -124,6 +132,25 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         const porcentajeCorrectas = (correctas / total) * 100;
         const porcentajeNeutrales = (neutrales / total) * 100;
         const porcentajeContradicciones = (contradicciones / total) * 100;
+
+        let mensaje = "";
+        let color = "";
+
+        if (porcentajeCorrectas > porcentajeNeutrales && porcentajeCorrectas > porcentajeContradicciones && porcentajeContradicciones < 30) {
+            mensaje = "¡Todo correcto! El texto es fiable!";
+            color = "green";  // Color verde para contenido correcto
+        } else if (porcentajeNeutrales > porcentajeCorrectas && porcentajeNeutrales > porcentajeContradicciones) {
+            mensaje = "Cuidado! No se ha podido verificar completamente el texto.";
+            color = "orange";  // Color naranja para contenido neutral
+        } else {
+            mensaje = "¡Alerta! !El texto no es fiable!"
+            color = "red";  // Color rojo para contradicciones
+        }
+
+        // Mostrar el resultado final
+        resultadoFinalDiv.style.display = "flex";
+        resultadoFinalDiv.innerHTML = mensaje;
+        resultadoFinalDiv.style.color = color;
 
         crearGrafico('graficoCorrectas', 'Correctas', porcentajeCorrectas, '#a8e0a8');
         crearGrafico('graficoNeutrales', 'Neutrales', porcentajeNeutrales, '#f0e68c');
