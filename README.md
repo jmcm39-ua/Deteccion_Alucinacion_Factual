@@ -24,5 +24,15 @@ python -m spacy download es_core_news_md
 python -m spacy download en_core_web_trf
 ```
 
+## Lanzar el proyecto
+
+Para lanzar el proyecto, simplemente hay que activar la API y ejecutar el front:
+```bash
+cd api/
+node api.js
+```
+Abrir el archivo index.html.
+
+
 
 
