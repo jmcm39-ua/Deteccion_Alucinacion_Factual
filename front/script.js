@@ -1,6 +1,5 @@
 let chartInstances = {};
 
-// Crear el IntersectionObserver para las gráficas
 const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -138,13 +137,13 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
 
         if (porcentajeCorrectas > porcentajeNeutrales && porcentajeCorrectas > porcentajeContradicciones && porcentajeContradicciones < 30) {
             mensaje = "¡Todo correcto! El texto es fiable!";
-            color = "green";  // Color verde para contenido correcto
+            color = "green";
         } else if (porcentajeNeutrales > porcentajeCorrectas && porcentajeNeutrales > porcentajeContradicciones) {
             mensaje = "Cuidado! No se ha podido verificar completamente el texto.";
-            color = "orange";  // Color naranja para contenido neutral
+            color = "orange";
         } else {
             mensaje = "¡Alerta! !El texto no es fiable!"
-            color = "red";  // Color rojo para contradicciones
+            color = "red";
         }
 
         // Mostrar el resultado final
@@ -156,7 +155,6 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         crearGrafico('graficoNeutrales', 'Neutrales', porcentajeNeutrales, '#f0e68c');
         crearGrafico('graficoContradicciones', 'Contradicciones', porcentajeContradicciones, '#add8e6');
 
-        // ✅ Mostrar y generar resumen global
         graficasResumenDiv.style.display = 'block';
         resumenGlobalDiv.style.display = 'flex';
         titulo3Div.style.display = 'flex';

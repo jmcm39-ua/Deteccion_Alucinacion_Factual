@@ -12,7 +12,6 @@ app.post('/api/etiquetar', (req, res) => {
     console.log('Solicitud recibida: /api/etiquetar');
     console.log('Texto recibido:', texto);
 
-    // Aquí se añade un argumento para silenciar los warnings en Python
     const python = spawn('python3', ['-W', 'ignore', '../scripts/script.py']); // -W ignore para ignorar los warnings
 
     let data = '';
@@ -23,12 +22,10 @@ app.post('/api/etiquetar', (req, res) => {
     });
 
     python.stderr.on('data', (chunk) => {
-        // Filtramos las advertencias de los modelos (como el de roberta-large-mnli)
         if (chunk.toString().includes("Some weights of the model checkpoint")) {
-            // Solo lo ignoramos si contiene el mensaje de advertencia específico
             console.log("Advertencia ignorada: ", chunk.toString());
         } else {
-            error += chunk;  // Solo agregar otros errores reales
+            error += chunk;
         }
     });
 
