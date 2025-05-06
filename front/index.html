@@ -1,47 +1,89 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Texto Etiquetado</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Incluir Chart.js -->
+  <meta charset="UTF-8">
+  <title>Texto Etiquetado</title>
+
+  <!-- Bootstrap 5.3 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-    <div id="titulo">Detector de Alucinación en Textos generados por IA</div>
-    <div id="contenedor">
-        <textarea id="textoInput" rows="4" placeholder="Introduce el texto aquí..."></textarea><br>
+<body class="bg-light">
 
-        <button id="enviarBtn">Enviar</button>
-        
-        <div id="leyenda">
-            <span class="circulo-verde"></span> Alucinación factual: la IA ha generado contenido que contradice el texto.
-        </div>
+  <!-- Título -->
+  <div id="titulo" class="text-center">
+    Detector de Alucinación en Textos generados por IA
+  </div>
 
-        <div id="resumen"></div>
+  <!-- Textarea grande -->
+  <div class="mb-4 text-center">
+    <textarea id="textoInput" class="form-control mx-auto" rows="12" placeholder="Introduce el texto aquí..."></textarea>
+  </div>
 
-        <!-- Spinner de carga -->
-        <div id="spinner" class="spinner" style="display: none;"></div>
-        <p id="spinner-texto" class="puntos" style="text-align: center; display: none;">Analizando<span class="puntos"></span></p>
+  <!-- Botón grande -->
+  <div class="mb-5 text-center">
+    <button id="enviarBtn" class="btn btn-primary">Enviar</button>
+  </div>
 
-        <div id="resultado"></div>
+<h3 id="titulo-1" class="text-center fw-semibold mt-5" style="display: none;">Texto Comprobado</h3>
 
-        <!-- Gráficas -->
-        <div id="gráficas" style="display: none; margin-top: 30px;">
-            <div class="grafico">
-                <canvas id="graficoCorrectas"></canvas>
-                <p>Correctas</p>
-            </div>
-            <div class="grafico">
-                <canvas id="graficoNeutrales"></canvas>
-                <p>Neutrales</p>
-            </div>
-            <div class="grafico">
-                <canvas id="graficoContradicciones"></canvas>
-                <p>Contradicciones</p>
-            </div>
-        </div>
-
-        <script src="script.js"></script>
+  <div id="leyenda" class="d-flex align-items-center justify-content-center mb-3" style="display: none;">
+    <div id="aux-leyenda" style="display: none;">
+        <span class="circulo-verde"></span>
+        <span class="ms-2">Alucinación factual: la IA ha generado contenido que contradice el texto.</span>
     </div>
+  </div>
+  
+
+  <!-- Spinner -->
+  <div id="spinner" class="spinner" style="display: none;"></div>
+  <p id="spinner-texto" class="text-center" style="display: none;">Analizando<span class="puntos"></span></p>
+
+
+  <!-- Resultado -->
+  <div id="resultado" style="display: none;"></div>
+
+<!-- Título de sección: Resultados Desglosados -->
+<h3 id="titulo-2" class="text-center fw-semibold mt-5" style="display: none;">Resultados Desglosados</h3>
+
+<!-- Gráficas -->
+<div id="gráficas" class="d-flex flex-wrap justify-content-around mt-4" style="display: none;">
+    <div id="gr-correcta" class="grafico text-center" style="display: none;">
+      <canvas id="graficoCorrectas"></canvas>
+      <p>Correctas</p>
+    </div>
+    <div id="gr-neutral" class="grafico text-center" style="display: none;">
+      <canvas id="graficoNeutrales"></canvas>
+      <p>Neutrales</p>
+    </div>
+    <div id="gr-mal" class="grafico text-center" style="display: none;">
+      <canvas id="graficoContradicciones"></canvas>
+      <p>Contradicciones</p>
+    </div>
+</div>
+
+<!-- Título de sección: Distribución Global -->
+<h3 id="titulo-3" class="text-center fw-semibold mt-5" style="display: none;">Distribución Global</h3>
+
+<!-- Gráfica resumen + datos centrado -->
+<div id="resumen-global" class="d-flex justify-content-center align-items-center gap-3 mt-4" style="display: none;">
+  <!-- Gráfica doughnut -->
+  <div id="gr-resumen" class="grafico text-center" style="display: none;">
+    <canvas id="graficoResumen" width="300" height="300" style="max-width: 400px;"></canvas>
+    <p>Distribución global</p>
+  </div>
+  <!-- Resumen de datos -->
+  <div id="info-resumen" class="text-start" style="max-width: 500px; padding: 50px;">
+    <p id="resumen-total"></p>
+    <p id="resumen-correctas" style="color: green;"></p>
+    <p id="resumen-neutrales" style="color: #f39c12;"></p>
+    <p id="resumen-contradicciones" style="color: red;"></p>
+  </div>
+</div>
+
+  <script src="script.js"></script>
 </body>
 </html>

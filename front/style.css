@@ -1,154 +1,113 @@
 body {
     font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
     margin: 0;
     background-color: #f4f4f4;
-}
-
-#titulo {
-    background-color: #e0f2fe;
     padding: 30px;
-    width: auto;
+  }
+  
+  /* Título con animación */
+  #titulo {
+    background: linear-gradient(to right, #0d6efd, #66b2ff);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 12px;
+    font-size: 2.2em;
+    font-weight: 600;
     text-align: center;
-    box-sizing: border-box;
-    font-size: 2em;
-    font-weight: bold;
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-30px);
     animation: fadeIn 1s ease-out forwards;
-    margin-top: 50px;
-    margin-bottom: 30px;
-    border-radius: 10px;
-}
-
-@keyframes fadeIn {
+    margin: 50px auto 40px;
+    max-width: 1000px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  @keyframes fadeIn {
     to {
-        opacity: 1;
-        transform: translateY(0);
+      opacity: 1;
+      transform: translateY(0);
     }
-}
-
-textarea {
-    width: 100%;
-    height: 300px; /* Tamaño fijo en altura */
-    padding: 15px;
-    font-size: 1.2em; /* Letra más grande */
-    font-family: 'Georgia', serif; /* Fuente más elegante */
-    line-height: 1.5;
-    resize: none; /* Opcional: para desactivar el redimensionado manual */
-    overflow-y: auto; /* Barra lateral cuando el contenido excede el tamaño */
+  }
+  
+  /* Textarea grande y ancho */
+  textarea {
+    width: 90%;
+    max-width: 1200px;
+    height: 350px;
+    padding: 20px;
+    font-size: 1.3em;
+    font-family: 'Georgia', serif;
+    line-height: 1.6;
+    resize: none;
+    overflow-y: auto;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 10px;
     box-sizing: border-box;
     background-color: #ffffff;
-}
-
-#leyenda {
-    display: none; /* Inicialmente oculta */
+  }
+  
+  /* Botón grande */
+  button {
+    padding: 30px 80px;  /* Aumenta el padding para hacerlo más grande */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 12px;  /* Aumentamos el radio para hacerlo más redondeado */
+    font-size: 1.6em;  /* Aumenta el tamaño de la fuente */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Hace que el botón ocupe todo el ancho disponible */
+    max-width: 300px;  /* Limita el tamaño máximo del botón */
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  #leyenda {
+    display: none;
     align-items: center;
-    margin-bottom: 20px; /* Margen inferior */
-}
-
-.circulo-verde {
+    margin-bottom: 20px;
+  }
+  
+  .circulo-verde {
     width: 15px;
     height: 15px;
     background-color: #a8e0a8;
     border-radius: 50%;
     margin-right: 5px;
-}
-
-#resultado {
-    width: 80%;
-    margin-top: 20px;
-    padding: 15px;
+  }
+  
+  #resultado {
+    width: 85%;
+    margin: 20px auto;
+    padding: 20px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     background-color: white;
     word-wrap: break-word;
-    display: none;
-}
-
-.subrayado {
+  }
+  
+  /* Subrayados */
+  .subrayado-contradiction {
     background-color: #a8e0a8;
     padding: 2px 4px;
     border-radius: 4px;
-}
-
-select {
-    width: 82%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
-    background-color: white;
-    margin-bottom: 10px;
-    transition: border 0.3s;
-}
-
-select:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-button {
-    padding: 14px 28px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 30px; /* Más espacio respecto al texto */
-    margin-bottom: 30px;
-    width: 100%; /* Hace que el botón ocupe todo el ancho del contenedor */
-    max-width: 300px; /* Para que no sea exageradamente ancho en pantallas grandes */
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-#contenedor {
-
-    padding: 30px;
-    width: 80%;
-    max-width: 800px;
-    text-align: center;
-    box-sizing: border-box;
-    border-radius: 10px;
-    animation: fadeIn 1s ease-out forwards;
-    opacity: 0;
-    transform: translateY(-20px);
-    animation-delay: 0.5s;
-    animation-fill-mode: forwards;
-    margin-bottom: 50px;
-}
-
-.subrayado-contradiction {
-    background-color: #a8e0a8; /* Color verde claro */
+    font-weight: bold;
+    color: black;
+  }
+  
+  .subrayado-neutral {
+    background-color: #d3d3d3;
     padding: 2px 4px;
     border-radius: 4px;
     font-weight: bold;
-    color: black; /* Asegura que el texto sea legible */
-}
-
-/* Estilo para neutral */
-.subrayado-neutral {
-    background-color: #d3d3d3; /* Color gris claro */
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-weight: bold;
-    color: black; /* Asegura que el texto sea legible */
-}
-
-
-/* Spinner */
-.spinner {
+    color: black;
+  }
+  
+  /* Spinner */
+  .spinner {
     border: 6px solid #f3f3f3;
     border-top: 6px solid #3498db;
     border-radius: 50%;
@@ -156,55 +115,64 @@ button:hover {
     height: 40px;
     animation: spin 1s linear infinite;
     margin: 20px auto;
-}
-
-@keyframes spin {
+  }
+  
+  @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-/* Puntos animados */
-#spinner-texto::after {
+  }
+  
+  /* Puntos animados */
+  #spinner-texto::after {
     content: '';
     animation: puntos 1.5s steps(4, end) infinite;
-}
-
-@keyframes puntos {
+  }
+  
+  @keyframes puntos {
     0%   { content: ''; }
     25%  { content: '.'; }
     50%  { content: '..'; }
     75%  { content: '...'; }
     100% { content: ''; }
-}
-
-/* Gráficas */
-#graficoCorrectas, #graficoNeutrales, #graficoContradicciones {
+  }
+  
+  /* Gráficas */
+  #graficoCorrectas, #graficoNeutrales, #graficoContradicciones {
     max-width: 300px;
     margin: 20px auto;
-}
-
+  }
+  
+/* Estilo para las gráficas con animación */
 .grafico {
     display: inline-block;
     width: 30%;
     text-align: center;
+    opacity: 0;  /* Inicialmente invisible */
+    transform: translateY(50px); /* Desplazada hacia abajo */
+    transition: opacity 1s, transform 1s;  /* Animación de aparición */
 }
 
-.grafico canvas {
+.grafico.visible {
+    opacity: 1;  /* Aparece */
+    transform: translateY(0);  /* Vuelve a su posición original */
+}
+  
+  .grafico canvas {
     width: 100%;
     height: auto;
-}
-
-.grafico p {
+  }
+  
+  .grafico p {
     margin-top: 10px;
     font-size: 1.2em;
     font-weight: bold;
-}
+  }
 
-/* Colores pastel */
-#gráficas {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 30px;
-}
-
-
+  #graficoResumen {
+    max-width: 250px;
+    margin: 0 auto;
+  }
+  #info-resumen {
+    max-width: 300px;
+  }
+  
