@@ -77,6 +77,11 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     const resumenCorrecta = document.getElementById('resumen-correctas');
     const resumenNeutral = document.getElementById('resumen-neutrales');
     const resumenContradiccion = document.getElementById('resumen-contradicciones');
+    const filtrosGrafico = document.getElementById('filtros-grafico');
+    const checkboxContradiction = document.getElementById('checkbox-contradiction');
+    const checkboxNeutral = document.getElementById('checkbox-neutral');
+    const checkboxOpciones = document.getElementById('checkbox-options');
+    const checkboxOpcionesAux = document.getElementById('checkbox-options-aux');
 
     // Ocultar todo y mostrar spinner
     resultadoDiv.style.display = 'none';
@@ -89,13 +94,17 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     resumenGlobalDiv.style.display = 'none';
     titulo1Div.style.display = 'none';
     titulo3Div.style.display = 'none';
+    filtrosGrafico.style.display = 'none';
     spinner.style.display = 'block';
     spinnerTexto.style.display = 'block';
     resumenTotal.style.display = 'none'; 
     resumenCorrecta.style.display = 'none'; 
     resumenNeutral.style.display = 'none'; 
     resumenContradiccion.style.display = 'none'; 
-
+    checkboxNeutral.style.display = 'none';
+    checkboxContradiction.style.display = 'none';
+    checkboxOpciones.style.display = 'none';
+    checkboxOpcionesAux.style.display = 'none';
 
 
     fetch('http://localhost:3000/api/etiquetar', {
@@ -114,9 +123,44 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         leyenda2Div.style.display = 'flex';
         leyendaauxDiv.style.display = 'flex';
         resultadoDiv.style.display = 'block';
-
+        checkboxOpciones.style.display = 'flex';
+        checkboxOpcionesAux.style.display = 'flex';
+        checkboxContradiction.style.display = 'flex';
+        checkboxNeutral.style.display = 'flex';
+        data_original = data.texto_etiquetado;
         resultadoDiv.innerHTML = data.texto_etiquetado;
 
+        // Función para aplicar subrayado basado en las selecciones
+        function aplicarSubrayado() {
+            // Obtener el contenido del div de resultado
+            let contenido = data_original;
+        
+            // Si el checkbox de contradicción está seleccionado, aplicamos el subrayado correspondiente
+            if (checkboxContradiction.checked) {
+            contenido = contenido.replace(/(contradicciones)/gi, '<span class="subrayado-contradiction">$1</span>');
+            } else {
+            // Si no está seleccionado, eliminamos el subrayado de contradicción
+            contenido = contenido.replace(/<span class="subrayado-contradiction">(.*?)<\/span>/gi, '$1');
+            }
+        
+            // Si el checkbox de neutral está seleccionado, aplicamos el subrayado correspondiente
+            if (checkboxNeutral.checked) {
+            contenido = contenido.replace(/(neutrales)/gi, '<span class="subrayado-neutral">$1</span>');
+            } else {
+            // Si no está seleccionado, eliminamos el subrayado de neutral
+            contenido = contenido.replace(/<span class="subrayado-neutral">(.*?)<\/span>/gi, '$1');
+            }
+              // Actualizar el HTML con el contenido modificado
+            resultadoDiv.innerHTML = contenido;
+        }
+
+        // Llamar a la función cada vez que se cambie el estado de los checkboxes
+        checkboxContradiction.addEventListener('change', aplicarSubrayado);
+        checkboxNeutral.addEventListener('change', aplicarSubrayado);
+
+        // Inicializar la función para aplicar el subrayado al cargar
+        aplicarSubrayado();
+        
 
         const correctas = data.n_entailment;
         const neutrales = data.n_neutral;
@@ -141,7 +185,6 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
             color = "red";
         }
 
-        // Mostrar el resultado final
         resultadoFinalDiv.style.display = "flex";
         resultadoFinalDiv.innerHTML = mensaje;
         resultadoFinalDiv.style.color = color;
@@ -153,6 +196,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         if (chartInstances['graficoResumen']) {
             chartInstances['graficoResumen'].destroy();
         }
+
         const ctxResumen = document.getElementById('graficoResumen').getContext('2d');
         chartInstances['graficoResumen'] = new Chart(ctxResumen, {
             type: 'doughnut',
@@ -194,11 +238,51 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
             }
         });
 
+        // Mostrar y manejar filtros (checkboxes)
+        filtrosGrafico.style.display = 'block';
+
+        const checkboxes = {
+            correctas: document.getElementById('check-correctas'),
+            neutrales: document.getElementById('check-neutrales'),
+            contradicciones: document.getElementById('check-contradicciones')
+        };
+
+        function actualizarGraficoResumen() {
+            const nuevaData = [];
+            const nuevasEtiquetas = [];
+            const nuevosColores = [];
+
+            if (checkboxes.correctas.checked) {
+                nuevaData.push(correctas);
+                nuevasEtiquetas.push('Correctas');
+                nuevosColores.push('#a8e0a8');
+            }
+            if (checkboxes.neutrales.checked) {
+                nuevaData.push(neutrales);
+                nuevasEtiquetas.push('Sin Determinar');
+                nuevosColores.push('#f0e68c');
+            }
+            if (checkboxes.contradicciones.checked) {
+                nuevaData.push(contradicciones);
+                nuevasEtiquetas.push('Contradicciones');
+                nuevosColores.push('#add8e6');
+            }
+
+            const chart = chartInstances['graficoResumen'];
+            chart.data.labels = nuevasEtiquetas;
+            chart.data.datasets[0].data = nuevaData;
+            chart.data.datasets[0].backgroundColor = nuevosColores;
+            chart.update();
+        }
+
+        Object.values(checkboxes).forEach(checkbox => {
+            checkbox.addEventListener('change', actualizarGraficoResumen);
+        });
+
         resumenTotal.style.display = 'flex'; 
         resumenCorrecta.style.display = 'block'; 
         resumenNeutral.style.display = 'block'; 
         resumenContradiccion.style.display = 'block'; 
-        // Rellenar datos de resumen textual
         resumenTotal.textContent = `Total de oraciones analizadas: ${total}`;
         resumenCorrecta.textContent = `Correctas (entailment): ${correctas} (${porcentajeCorrectas.toFixed(2)}%)`;
         resumenNeutral.textContent = `Sin determinar: ${neutrales} (${porcentajeNeutrales.toFixed(2)}%)`;

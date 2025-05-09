@@ -1286,11 +1286,12 @@ if __name__ == "__main__":
     analizar_texto(texto)
 
 
+    benchmark_con_openai()
     benchmark_con_spacy()
+
+    '''
+
     texto = sys.stdin.read()
     resultado = procesar_texto(texto)
     print(json.dumps(resultado))
 
-    '''
-
-    benchmark_con_openai()

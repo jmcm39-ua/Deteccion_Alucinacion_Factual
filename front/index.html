@@ -49,14 +49,37 @@
     </div>
         
   </div>
+
+  <!-- Checkboxes para filtrar la gráfica -->
+  <div id="checkbox-options" class="container my-4 d-flex justify-content-center" style="display: none;">
+    <div id="checkbox-options-aux" class="row w-100 justify-content-center" style="display: none;">
+      <div class="col-auto">
+        <label class="d-inline-flex align-items-center me-4">
+          <input type="checkbox" id="checkbox-correcta" checked class="me-2"> Subrayar correctas
+        </label>
+      </div>
+      <div class="col-auto">
+        <label class="d-inline-flex align-items-center me-4">
+          <input type="checkbox" id="checkbox-neutral" checked class="me-2"> Subrayar sin determinar
+        </label>
+      </div>
+      <div class="col-auto">
+        <label class="d-inline-flex align-items-center">
+          <input type="checkbox" id="checkbox-contradiction" checked class="me-2"> Subrayar contradicciones
+        </label>
+      </div>
+    </div>
+  </div>
+    
+  </div>
   
+  <div id="resultado" style="display: none;"></div>
 
   <!-- Spinner -->
   <div id="spinner" class="spinner" style="display: none;"></div>
   <p id="spinner-texto" class="text-center" style="display: none;">Analizando<span class="puntos"></span></p>
 
 
-  <div id="resultado" style="display: none;"></div>
 
 <div style="display: flex; justify-content: center;">
   <h3 id="titulo-3" class="text-center fw-semibold mt-5" style="display: none;">Distribución Global</h3>
@@ -64,6 +87,18 @@
 <!-- Gráfica resumen + datos centrado -->
 <div id="resumen-global" class="d-flex justify-content-center align-items-center gap-3 mt-4" style="display: none;">
   <div id="gr-resumen" class="grafico text-center" style="display: none;">
+    <!-- Checkboxes para filtrar la gráfica -->
+    <div id="filtros-grafico" class="text-center mb-3" style="display: none;">
+      <label class="me-3">
+        <input type="checkbox" id="check-correctas" checked> Correctas
+      </label>
+      <label class="me-3">
+        <input type="checkbox" id="check-neutrales" checked> Sin determinar
+      </label>
+      <label>
+        <input type="checkbox" id="check-contradicciones" checked> Contradicciones
+      </label>
+    </div>
     <canvas id="graficoResumen" width="300" height="300" style="max-width: 400px;"></canvas>
     <p>Distribución global</p>
   </div>
@@ -75,6 +110,27 @@
     <p id="resumen-contradicciones" style="color: red;"></p>
   </div>
 </div>
+
+
+<div class="contenido-centrado">
+  <div class="elementor-container">
+    <div class="elementor-column">
+      <div class="elementor-widget-wrap">
+        <div class="elementor-widget-container">
+          <img src="https://cortex.gplsi.es/wp-content/uploads/2023/01/micin-uefeder-aei_page-0001-1024x306.jpg" alt="">
+        </div>
+      </div>
+    </div>
+    <div class="elementor-column">
+      <div class="elementor-widget-wrap">
+        <div class="elementor-widget-container">
+          <p>Esta demo es parte del proyecto de I+D+i «PID2021-123956OB-I00», financiado/a por MCIN/ AEI/10.13039/501100011033/ y por “FEDER Una manera de hacer Europa”.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <script src="script.js"></script>
 </body>

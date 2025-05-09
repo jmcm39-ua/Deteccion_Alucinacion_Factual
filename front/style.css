@@ -195,4 +195,41 @@ body {
   #info-resumen {
     max-width: 300px;
   }
+
+  .contenido-centrado {
+    max-width: 900px;  
+    margin: 0 auto;     
+    padding: 20px;
+    display: flex;      
+    flex-wrap: wrap;    
+    gap: 30px;     
+    justify-content: center;
+  }
   
+  .elementor-container {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;  
+    gap: 20px;          
+  }
+  
+  .elementor-column {
+    width: 50%;        
+    box-sizing: border-box;
+  }
+  
+  .elementor-widget-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+  }
+  
+  .elementor-widget-text-editor p,
+  .elementor-widget-container p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.4;
+  }
