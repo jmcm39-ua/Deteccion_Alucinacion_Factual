@@ -1,32 +1,12 @@
 import json
 import openai
 import os
-
+from openai_service import traducir_con_azure_openai
 from openai import AzureOpenAI
-
-client = AzureOpenAI(
-    api_version="2024-12-01-preview",
-    azure_endpoint="Tu endpoint",
-    api_key="Tu token"
-)
 
 input_file = "../datasets/dataset_ingles.jsonl"
 output_file = "../datasets/dataset_espanol_2.jsonl"
 
-# Función para traducir con Azure OpenAI
-def traducir_con_azure_openai(texto):
-    try:
-
-        response = client.chat.completions.create(max_tokens=1024,
-            temperature=0.5,
-            model="gpt-4o",
-            messages=[
-                {"role": "user", "content": f"Traduce al español el siguiente texto: {texto}"}
-            ])
-        return response.choices[0].message.content
-    except Exception as e:
-        print(f"Error al traducir con Azure OpenAI: {e}")
-        return ""
 
 # Leer archivo original y escribir traducciones
 numero = 1

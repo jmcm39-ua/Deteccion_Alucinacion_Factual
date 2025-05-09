@@ -69,15 +69,14 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     const leyendaauxDiv = document.getElementById('aux-leyenda');
     const spinner = document.getElementById('spinner');
     const spinnerTexto = document.getElementById('spinner-texto');
-    const graficasDiv = document.getElementById('gráficas');
-    const graficasCorrectasDiv = document.getElementById('gr-correcta');
-    const graficasNeutralesDiv = document.getElementById('gr-neutral');
     const graficasResumenDiv = document.getElementById('gr-resumen');
-    const graficasIncorrectasDiv = document.getElementById('gr-mal');
     const resumenGlobalDiv = document.getElementById('resumen-global');
     const titulo1Div = document.getElementById('titulo-1');
-    const titulo2Div = document.getElementById('titulo-2');
     const titulo3Div = document.getElementById('titulo-3');
+    const resumenTotal = document.getElementById('resumen-total');
+    const resumenCorrecta = document.getElementById('resumen-correctas');
+    const resumenNeutral = document.getElementById('resumen-neutrales');
+    const resumenContradiccion = document.getElementById('resumen-contradicciones');
 
     // Ocultar todo y mostrar spinner
     resultadoDiv.style.display = 'none';
@@ -86,17 +85,18 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     leyenda1Div.style.display = 'none';
     leyenda2Div.style.display = 'none';
     leyendaauxDiv.style.display = 'none';
-    graficasDiv.style.display = 'none';
-    graficasCorrectasDiv.style.display = 'none';
-    graficasNeutralesDiv.style.display = 'none';
-    graficasIncorrectasDiv.style.display = 'none';
     graficasResumenDiv.style.display = 'none';
     resumenGlobalDiv.style.display = 'none';
     titulo1Div.style.display = 'none';
-    titulo2Div.style.display = 'none';
     titulo3Div.style.display = 'none';
     spinner.style.display = 'block';
     spinnerTexto.style.display = 'block';
+    resumenTotal.style.display = 'none'; 
+    resumenCorrecta.style.display = 'none'; 
+    resumenNeutral.style.display = 'none'; 
+    resumenContradiccion.style.display = 'none'; 
+
+
 
     fetch('http://localhost:3000/api/etiquetar', {
         method: 'POST',
@@ -117,11 +117,6 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
 
         resultadoDiv.innerHTML = data.texto_etiquetado;
 
-        titulo2Div.style.display = 'block';
-        graficasDiv.style.display = 'block';
-        graficasCorrectasDiv.style.display = 'block';
-        graficasIncorrectasDiv.style.display = 'block';
-        graficasNeutralesDiv.style.display = 'block';
 
         const correctas = data.n_entailment;
         const neutrales = data.n_neutral;
@@ -136,13 +131,13 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         let color = "";
 
         if (porcentajeCorrectas > porcentajeNeutrales && porcentajeCorrectas > porcentajeContradicciones && porcentajeContradicciones < 30) {
-            mensaje = "¡Todo correcto! El texto es fiable!";
+            mensaje = "¡Todo correcto! No se ha detectado anomalías en el texto.";
             color = "green";
         } else if (porcentajeNeutrales > porcentajeCorrectas && porcentajeNeutrales > porcentajeContradicciones) {
-            mensaje = "Cuidado! No se ha podido verificar completamente el texto.";
+            mensaje = "!Cuidado! No se ha podido verificar completamente el texto.";
             color = "orange";
         } else {
-            mensaje = "¡Alerta! !El texto no es fiable!"
+            mensaje = "¡Alerta! Se ha detectado información no fiable en el texto introducido."
             color = "red";
         }
 
@@ -150,10 +145,6 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         resultadoFinalDiv.style.display = "flex";
         resultadoFinalDiv.innerHTML = mensaje;
         resultadoFinalDiv.style.color = color;
-
-        crearGrafico('graficoCorrectas', 'Correctas', porcentajeCorrectas, '#a8e0a8');
-        crearGrafico('graficoNeutrales', 'Neutrales', porcentajeNeutrales, '#f0e68c');
-        crearGrafico('graficoContradicciones', 'Contradicciones', porcentajeContradicciones, '#add8e6');
 
         graficasResumenDiv.style.display = 'block';
         resumenGlobalDiv.style.display = 'flex';
@@ -166,7 +157,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         chartInstances['graficoResumen'] = new Chart(ctxResumen, {
             type: 'doughnut',
             data: {
-                labels: ['Correctas', 'Neutrales', 'Contradicciones'],
+                labels: ['Correctas', 'Sin Determinar', 'Contradicciones'],
                 datasets: [{
                     data: [correctas, neutrales, contradicciones],
                     backgroundColor: ['#a8e0a8', '#f0e68c', '#add8e6'],
@@ -203,11 +194,16 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
             }
         });
 
+        resumenTotal.style.display = 'flex'; 
+        resumenCorrecta.style.display = 'block'; 
+        resumenNeutral.style.display = 'block'; 
+        resumenContradiccion.style.display = 'block'; 
         // Rellenar datos de resumen textual
-        document.getElementById('resumen-total').textContent = `Total de oraciones analizadas: ${total}`;
-        document.getElementById('resumen-correctas').textContent = `Correctas (entailment): ${correctas} (${porcentajeCorrectas.toFixed(2)}%)`;
-        document.getElementById('resumen-neutrales').textContent = `Neutrales: ${neutrales} (${porcentajeNeutrales.toFixed(2)}%)`;
-        document.getElementById('resumen-contradicciones').textContent = `Contradicciones: ${contradicciones} (${porcentajeContradicciones.toFixed(2)}%)`;
+        resumenTotal.textContent = `Total de oraciones analizadas: ${total}`;
+        resumenCorrecta.textContent = `Correctas (entailment): ${correctas} (${porcentajeCorrectas.toFixed(2)}%)`;
+        resumenNeutral.textContent = `Sin determinar: ${neutrales} (${porcentajeNeutrales.toFixed(2)}%)`;
+        resumenContradiccion.textContent = `Contradicciones: ${contradicciones} (${porcentajeContradicciones.toFixed(2)}%)`;
+
     })
     .catch(error => {
         console.error('Error:', error);

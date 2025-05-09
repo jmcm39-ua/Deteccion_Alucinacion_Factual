@@ -8,6 +8,7 @@ from difflib import get_close_matches
 import sys
 import json
 import warnings
+from openai_service import extraer_sujeto_openai
 warnings.filterwarnings("ignore")
 from transformers.utils import logging
 logging.set_verbosity_error()
@@ -163,7 +164,7 @@ def recuperar_hechos(qid):
             hechos.append(f"{descripcion_corta}.")
 
         propiedades = {
-            # Personas
+            # 🧑 Personas
             'P106': 'Ocupación',
             'P166': 'Premio recibido',
             'P19': 'Lugar de nacimiento',
@@ -177,8 +178,26 @@ def recuperar_hechos(qid):
             'P26': 'Cónyuge',
             'P22': 'Padre',
             'P25': 'Madre',
+            'P734': 'Apellido',
+            'P735': 'Nombre de pila',
+            'P161': 'Películas en las que ha actuado',
+            'P175': 'Intérprete',
+            'P3095': 'Personaje interpretado',
+            'P108': 'Empleado en',
 
-            # Libros / Obras
+            # 🎬 Películas / Producciones audiovisuales
+            'P57': 'Director',
+            'P58': 'Guionista',
+            'P161': 'Reparto',
+            'P272': 'Productora',
+            'P364': 'Idioma original',
+            'P577': 'Fecha de publicación/estreno',
+            'P1040': 'Editor',
+            'P2130': 'Costo de producción',
+            'P2142': 'Ingresos brutos',
+            'P1476': 'Título oficial',
+
+            # 📚 Libros / Obras
             'P50': 'Autor',
             'P577': 'Fecha de publicación',
             'P110': 'Ilustrador',
@@ -186,8 +205,11 @@ def recuperar_hechos(qid):
             'P364': 'Idioma de la obra',
             'P1476': 'Título oficial',
             'P1680': 'Descripción corta',
+            'P123': 'Editorial',
+            'P655': 'Título original',
+            'P98': 'Editor literario',
 
-            # Organizaciones / Empresas
+            # 🏢 Organizaciones / Empresas
             'P112': 'Fundador',
             'P159': 'Sede',
             'P571': 'Fecha de fundación',
@@ -195,15 +217,21 @@ def recuperar_hechos(qid):
             'P1454': 'Accionista',
             'P127': 'Propietario',
             'P749': 'Empresa matriz',
+            'P1128': 'Empleados',
+            'P2139': 'Recuento de ingresos',
+            'P2403': 'Autoridad reguladora',
 
-            # Lugares
+            # 🌍 Lugares
             'P17': 'País',
             'P131': 'Ubicación administrativa',
             'P625': 'Coordenadas',
             'P2046': 'Área',
             'P1082': 'Población',
+            'P856': 'Página web oficial',
+            'P1448': 'Nombre oficial',
+            'P1464': 'Categoría de patrimonio',
 
-            # Objetos astronómicos / planetas
+            # 🌌 Objetos astronómicos / Planetas
             'P2583': 'Clase espectral',
             'P2120': 'Gravedad superficial',
             'P2067': 'Masa',
@@ -212,8 +240,10 @@ def recuperar_hechos(qid):
             'P3984': 'Órbita de',
             'P3996': 'Luna de',
             'P376': 'Órbita alrededor de',
+            'P625': 'Coordenadas celestes',
+            'P59': 'Constelación',
 
-            # Relaciones / colaboraciones
+            # 🔁 Relaciones / colaboraciones / composición
             'P361': 'Parte de',
             'P527': 'Tiene como parte',
             'P176': 'Fabricante',
@@ -221,8 +251,62 @@ def recuperar_hechos(qid):
             'P710': 'Participante',
             'P155': 'Predecesor',
             'P156': 'Sucesor',
-            'P144': 'Basado en'
+            'P144': 'Basado en',
+            'P50': 'Autor de la obra',
+            'P629': 'Versión o edición de',
+
+            # 🏆 Deportes (por si aparecen atletas)
+            'P54': 'Miembro de equipo deportivo',
+            'P1350': 'Número de victorias',
+            'P1351': 'Número de derrotas',
+            'P641': 'Deporte practicado',
+
+            # 🎶 Música
+            'P676': 'Número de catálogo',
+            'P435': 'ID MusicBrainz',
+
+            # 👨‍💻 Tecnología / Software
+            'P178': 'Desarrollador',
+            'P348': 'Versión',
+            'P275': 'Licencia',
+            'P1072': 'Sitio web oficial del software',
+
+            # 🏛 Cultura / Historia
+            'P128': 'Lugar de exposición',
+            'P573': 'Período histórico',
+            'P2189': 'Proyecto artístico',
+
+            # 🦠 Biología / Ciencia
+            'P27': 'Especie',
+            'P2219': 'Organismo relacionado',
+            'P2313': 'Función biológica',
+            'P679': 'Propiedades genéticas',
+
+            # 🚗 Vehículos / Transportes
+            'P414': 'Compañía aérea',
+            'P1098': 'Propietario del vehículo',
+            'P3407': 'Tipo de transporte',
+
+            # 🏠 Construcción / Arquitectura
+            'P279': 'Tipo de edificio',
+            'P152': 'Material de construcción',
+            'P3179': 'Arquitecto',
+
+            # 🍽 Alimentos
+            'P476': 'Ingrediente principal',
+            'P2067': 'Método de preparación',
+
+            # 🌿 Medio ambiente / Naturaleza
+            'P720': 'Habita en',
+            'P1632': 'Requiere',
+
+            # 💡 Invenciones
+            'P1799': 'Nombre del invento',
+            'P3504': 'Patente',
+
+            
         }
+
 
         for pid, descripcion in propiedades.items():
             if pid in entity_data:
@@ -321,6 +405,8 @@ def generar_oracion_resumen_con_etiquetas(nombre, hechos, tipos_etiquetas):
         partes.append(f"es {', '.join(set(tipos_legibles))}")
 
     # Datos personales
+    ocup = extraer_valor("Ocupación")
+    #premio = extraer_valor("Premio recibido")
     nac = extraer("Fecha de nacimiento")
     lugar_nac = extraer_valor("Lugar de nacimiento")
     falle = extraer("Fecha de fallecimiento")
@@ -330,40 +416,64 @@ def generar_oracion_resumen_con_etiquetas(nombre, hechos, tipos_etiquetas):
     conyuge = extraer_valor("Cónyuge")
     padre = extraer_valor("Padre")
     madre = extraer_valor("Madre")
-    ocup = extraer_valor("Ocupación")
     cargo = extraer_valor("Cargo o posición")
+    apellido = extraer_valor("Apellido")
+    nombre_pila = extraer_valor("Nombre de pila")
+    peliculas = extraer_valor("Películas en las que ha actuado")
+    interprete = extraer_valor("Intérprete")
+    personaje = extraer_valor("Personaje interpretado")
+    #obra = extraer_valor("Obra destacada")
+    companias = extraer_valor("Empleado en") 
 
-    if lugar_nac or nac:
-        frag = []
-        if lugar_nac:
-            frag.append(f"nació en {', '.join(set(lugar_nac))}")
-        if nac:
-            frag.append(f"el {nac[0].replace('Fecha de nacimiento: +', '').split('T')[0]}")
-        partes.append(" ".join(frag))
+    # Información de nacimiento
+    if lugar_nac and nac:
+        partes.append(f"nació en {', '.join(set(lugar_nac))} el {nac[0].replace('Fecha de nacimiento: +', '').split('T')[0]}")
 
-    if lugar_falle or falle:
-        frag = []
-        if lugar_falle:
-            frag.append(f"falleció en {', '.join(set(lugar_falle))}")
-        if falle:
-            frag.append(f"el {falle[0].replace('Fecha de fallecimiento: +', '').split('T')[0]}")
-        partes.append(" ".join(frag))
+    # Información de fallecimiento
+    if lugar_falle and falle:
+        partes.append(f"falleció en {', '.join(set(lugar_falle))} el {falle[0].replace('Fecha de fallecimiento: +', '').split('T')[0]}")
 
+    # Información de nacionalidad
     if nacionalidad:
         partes.append(f"de nacionalidad {', '.join(set(nacionalidad))}")
+
+    # Información de educación
     if educacion:
         partes.append(f"estudió en {', '.join(set(educacion))}")
+
+    # Información de cónyuge
     if conyuge:
         partes.append(f"su cónyuge es {', '.join(set(conyuge))}")
+
+    # Información de los padres
     if padre or madre:
         parentesco = []
         if padre: parentesco.append(f"padre: {', '.join(set(padre))}")
         if madre: parentesco.append(f"madre: {', '.join(set(madre))}")
         partes.append("tiene como " + " y ".join(parentesco))
+
+    # Información de ocupación
     if ocup:
         partes.append(f"fue {', '.join(set(ocup))}")
+
+    # Información de cargos
     if cargo:
         partes.append(f"ocupó cargos como {', '.join(set(cargo))}")
+
+    # Información sobre apellidos y nombres
+    if apellido or nombre_pila:
+        nombres = []
+        if apellido: nombres.append(f"apellido: {', '.join(set(apellido))}")
+        if nombre_pila: nombres.append(f"nombre de pila: {', '.join(set(nombre_pila))}")
+        partes.append("con " + " y ".join(nombres))
+
+    # Información sobre películas y personajes interpretados
+    if peliculas or interprete or personaje:
+        peliculas_info = []
+        if peliculas: peliculas_info.append(f"actuó en películas como {', '.join(set(peliculas))}")
+        if interprete: peliculas_info.append(f"fue intérprete de {', '.join(set(interprete))}")
+        if personaje: peliculas_info.append(f"interpretó personajes como {', '.join(set(personaje))}")
+        partes.append(" ".join(peliculas_info))
 
 # Premios con fechas completas
     premios = [h for h in hechos_legibles if h.startswith("Premio recibido")]
@@ -391,96 +501,481 @@ def generar_oracion_resumen_con_etiquetas(nombre, hechos, tipos_etiquetas):
     if obras_format:
         partes.append(f"es conocido por obras como {', '.join(set(obras_format))}")
 
-    # Organización
-    fundacion = extraer("Fecha de fundación")
+    if companias:
+        partes.append(f"trabajó en {', '.join(set(companias))}")
+
+    
+    # Datos de producciones audiovisuales
+    director = extraer_valor("Director")
+    guionista = extraer_valor("Guionista")
+    reparto = extraer_valor("Reparto")
+    productora = extraer_valor("Productora")
+    idioma_original = extraer_valor("Idioma original")
+    fecha_estreno = extraer("Fecha de publicación/estreno")
+    compositor = extraer_valor("Compositor")
+    editor = extraer_valor("Editor")
+    costo_produccion = extraer_valor("Costo de producción")
+    ingresos_brutos = extraer_valor("Ingresos brutos")
+    titulo_oficial = extraer_valor("Título oficial")
+
+    # Información de director
+    if director:
+        partes.append(f"dirigido por {', '.join(set(director))}")
+
+    # Información de guionista
+    if guionista:
+        partes.append(f"escrito por {', '.join(set(guionista))}")
+
+    # Información de reparto
+    if reparto:
+        partes.append(f"con la participación de {', '.join(set(reparto))}")
+
+    # Información de productora
+    if productora:
+        partes.append(f"producido por {', '.join(set(productora))}")
+
+    # Información de idioma original
+    if idioma_original:
+        partes.append(f"en idioma original {', '.join(set(idioma_original))}")
+
+    # Información de fecha de estreno
+    if fecha_estreno:
+        partes.append(f"estrenado el {fecha_estreno[0].replace('Fecha de publicación/estreno: +', '').split('T')[0]}")
+
+    # Información de compositor
+    if compositor:
+        partes.append(f"con música de {', '.join(set(compositor))}")
+
+    # Información de editor
+    if editor:
+        partes.append(f"editado por {', '.join(set(editor))}")
+
+    # Información de costo de producción
+    if costo_produccion:
+        partes.append(f"con un costo de producción de {', '.join(set(costo_produccion))}")
+
+    # Información de ingresos brutos
+    if ingresos_brutos:
+        partes.append(f"y unos ingresos brutos de {', '.join(set(ingresos_brutos))}")
+
+    # Información de título oficial
+    if titulo_oficial:
+        partes.append(f"con el título oficial {', '.join(set(titulo_oficial))}")
+
+    # Datos de libros y obras
+    autor = extraer_valor("Autor")
+    fecha_publicacion = extraer("Fecha de publicación")
+    ilustrador = extraer_valor("Ilustrador")
+    lugar_publicacion = extraer_valor("Lugar de publicación")
+    idioma_obra = extraer_valor("Idioma de la obra")
+    titulo_oficial_obra = extraer_valor("Título oficial")
+    descripcion_corta = extraer_valor("Descripción corta")
+    editorial = extraer_valor("Editorial")
+    titulo_original = extraer_valor("Título original")
+    editor_literario = extraer_valor("Editor literario")
+
+    # Información de autor
+    if autor:
+        partes.append(f"escrito por {', '.join(set(autor))}")
+
+    # Información de fecha de publicación
+    if fecha_publicacion:
+        partes.append(f"publicado el {fecha_publicacion[0].replace('Fecha de publicación: +', '').split('T')[0]}")
+
+    # Información de ilustrador
+    if ilustrador:
+        partes.append(f"con ilustraciones de {', '.join(set(ilustrador))}")
+
+    # Información de lugar de publicación
+    if lugar_publicacion:
+        partes.append(f"publicado en {', '.join(set(lugar_publicacion))}")
+
+    # Información de idioma de la obra
+    if idioma_obra:
+        partes.append(f"en el idioma {', '.join(set(idioma_obra))}")
+
+    # Información de título oficial
+    if titulo_oficial_obra:
+        partes.append(f"con el título oficial {', '.join(set(titulo_oficial_obra))}")
+
+    # Información de descripción corta
+    if descripcion_corta:
+        partes.append(f"su descripción corta es: {', '.join(set(descripcion_corta))}")
+
+    # Información de editorial
+    if editorial:
+        partes.append(f"publicado por {', '.join(set(editorial))}")
+
+    # Información de título original
+    if titulo_original:
+        partes.append(f"con el título original {', '.join(set(titulo_original))}")
+
+    # Información de editor literario
+    if editor_literario:
+        partes.append(f"editado por {', '.join(set(editor_literario))}")
+
+    # Datos de organizaciones y empresas
     fundador = extraer_valor("Fundador")
     sede = extraer_valor("Sede")
+    fecha_fundacion = extraer("Fecha de fundación")
     industria = extraer_valor("Industria")
-    accionistas = extraer_valor("Accionista")
+    accionista = extraer_valor("Accionista")
     propietario = extraer_valor("Propietario")
-    matriz = extraer_valor("Empresa matriz")
+    empresa_matriz = extraer_valor("Empresa matriz")
+    empleados = extraer_valor("Empleados")
+    recuento_ingresos = extraer_valor("Recuento de ingresos")
+    autoridad_reguladora = extraer_valor("Autoridad reguladora")
 
-    if fundacion:
-        partes.append(f"fue fundada el {fundacion[0].replace('Fecha de fundación: +', '').split('T')[0]}")
+    # Información de fundador
     if fundador:
         partes.append(f"fundada por {', '.join(set(fundador))}")
+
+    # Información de sede
     if sede:
-        partes.append(f"tiene sede en {', '.join(set(sede))}")
+        partes.append(f"su sede se encuentra en {', '.join(set(sede))}")
+
+    # Información de fecha de fundación
+    if fecha_fundacion:
+        partes.append(f"fundada el {fecha_fundacion[0].replace('Fecha de fundación: +', '').split('T')[0]}")
+
+    # Información de industria
     if industria:
         partes.append(f"pertenece a la industria de {', '.join(set(industria))}")
-    if accionistas:
-        partes.append(f"tiene como accionistas a {', '.join(set(accionistas))}")
+
+    # Información de accionistas
+    if accionista:
+        partes.append(f"con accionistas como {', '.join(set(accionista))}")
+
+    # Información de propietario
     if propietario:
         partes.append(f"es propiedad de {', '.join(set(propietario))}")
-    if matriz:
-        partes.append(f"su empresa matriz es {', '.join(set(matriz))}")
+
+    # Información de empresa matriz
+    if empresa_matriz:
+        partes.append(f"forma parte del grupo {', '.join(set(empresa_matriz))}")
+
+    # Información de empleados
+    if empleados:
+        partes.append(f"emplea a {', '.join(set(empleados))}")
+
+    # Información de recuento de ingresos
+    if recuento_ingresos:
+        partes.append(f"con un recuento de ingresos de {', '.join(set(recuento_ingresos))}")
+
+    # Información de autoridad reguladora
+    if autoridad_reguladora:
+        partes.append(f"y está regulada por {', '.join(set(autoridad_reguladora))}")
 
     # Lugar
     pais = extraer_valor("País")
-    admin = extraer_valor("Ubicación administrativa")
+    ubicacion_administrativa = extraer_valor("Ubicación administrativa")
+    coordenadas = extraer_valor("Coordenadas")
     area = extraer_valor("Área")
     poblacion = extraer_valor("Población")
-    creacion = extraer("Fecha de creación")
-    coord = extraer_valor("Coordenadas")
+    pagina_web = extraer_valor("Página web oficial")
+    nombre_oficial = extraer_valor("Nombre oficial")
+    categoria_patrimonio = extraer_valor("Categoría de patrimonio")
 
+    # Información de país
     if pais:
-        partes.append(f"está en {', '.join(set(pais))}")
-    if admin:
-        partes.append(f"pertenece a {', '.join(set(admin))}")
-    if creacion:
-        partes.append(f"fue creado el {creacion[0].replace('Fecha de creación: +', '').split('T')[0]}")
-    if poblacion:
-        partes.append(f"tiene una población de {', '.join(set(poblacion))}")
+        partes.append(f"se encuentra en {', '.join(set(pais))}")
+
+    # Información de ubicación administrativa
+    if ubicacion_administrativa:
+        partes.append(f"ubicado en la {', '.join(set(ubicacion_administrativa))}")
+
+    # Información de coordenadas
+    if coordenadas:
+        partes.append(f"con coordenadas {', '.join(set(coordenadas))}")
+
+    # Información de área
     if area:
-        partes.append(f"con un área de {', '.join(set(area))}")
-    if coord:
-        partes.append(f"ubicado en las coordenadas {', '.join(set(coord))}")
+        partes.append(f"con un área de {', '.join(set(area))} km²")
 
-    # Planeta / objeto astronómico
-    clase = extraer_valor("Clase espectral")
-    gravedad = extraer_valor("Gravedad superficial")
+    # Información de población
+    if poblacion:
+        partes.append(f"con una población de {', '.join(set(poblacion))}")
+
+    # Información de página web
+    if pagina_web:
+        partes.append(f"su página web oficial es {', '.join(set(pagina_web))}")
+
+    # Información de nombre oficial
+    if nombre_oficial:
+        partes.append(f"su nombre oficial es {', '.join(set(nombre_oficial))}")
+
+    # Información de categoría de patrimonio
+    if categoria_patrimonio:
+        partes.append(f"y está clasificado como {', '.join(set(categoria_patrimonio))} en términos de patrimonio")
+
+    # Datos astronómicos
+    clase_espectral = extraer_valor("Clase espectral")
+    gravedad_superficial = extraer_valor("Gravedad superficial")
     masa = extraer_valor("Masa")
-    diametro = extraer_valor("Diámetro")
     orbita = extraer_valor("Órbita")
-    orbita_de = extraer_valor("Órbita alrededor de")
+    diametro = extraer_valor("Diámetro")
+    orbita_de = extraer_valor("Órbita de")
     luna_de = extraer_valor("Luna de")
+    orbita_alrededor_de = extraer_valor("Órbita alrededor de")
+    coordenadas_celestes = extraer_valor("Coordenadas celestes")
+    constelacion = extraer_valor("Constelación")
 
-    if clase:
-        partes.append(f"tiene clase espectral {', '.join(set(clase))}")
-    if gravedad:
-        partes.append(f"con gravedad superficial de {', '.join(set(gravedad))}")
+    # Información de clase espectral
+    if clase_espectral:
+        partes.append(f"su clase espectral es {', '.join(set(clase_espectral))}")
+
+    # Información de gravedad superficial
+    if gravedad_superficial:
+        partes.append(f"su gravedad superficial es de {', '.join(set(gravedad_superficial))} m/s²")
+
+    # Información de masa
     if masa:
-        partes.append(f"y masa de {', '.join(set(masa))}")
-    if diametro:
-        partes.append(f"con un diámetro de {', '.join(set(diametro))}")
+        partes.append(f"su masa es {', '.join(set(masa))} kg")
+
+    # Información de órbita
     if orbita:
-        partes.append(f"tiene una órbita de {', '.join(set(orbita))}")
+        partes.append(f"su órbita es {', '.join(set(orbita))}")
+
+    # Información de diámetro
+    if diametro:
+        partes.append(f"su diámetro es de {', '.join(set(diametro))} km")
+
+    # Información de órbita de
     if orbita_de:
         partes.append(f"orbita alrededor de {', '.join(set(orbita_de))}")
+
+    # Información de luna de
     if luna_de:
-        partes.append(f"es una luna de {', '.join(set(luna_de))}")
+        partes.append(f"es luna de {', '.join(set(luna_de))}")
 
-    # Relaciones / Colaboraciones
+    # Información de órbita alrededor de
+    if orbita_alrededor_de:
+        partes.append(f"orbita alrededor de {', '.join(set(orbita_alrededor_de))}")
+
+    # Información de coordenadas celestes
+    if coordenadas_celestes:
+        partes.append(f"sus coordenadas celestes son {', '.join(set(coordenadas_celestes))}")
+
+    # Información de constelación
+    if constelacion:
+        partes.append(f"pertenece a la constelación de {', '.join(set(constelacion))}")
+
+    # Datos de relaciones y colaboraciones
     parte_de = extraer_valor("Parte de")
-    tiene_partes = extraer_valor("Tiene como parte")
+    tiene_como_parte = extraer_valor("Tiene como parte")
     fabricante = extraer_valor("Fabricante")
-    patrocinador = extraer_valor("Patrocinado por")
+    patrocinado_por = extraer_valor("Patrocinado por")
     participante = extraer_valor("Participante")
+    predecesor = extraer_valor("Predecesor")
+    sucesor = extraer_valor("Sucesor")
     basado_en = extraer_valor("Basado en")
+    autor_obra = extraer_valor("Autor de la obra")
+    version_edicion = extraer_valor("Versión o edición de")
 
+    # Información de parte de
     if parte_de:
-        partes.append(f"forma parte de {', '.join(set(parte_de))}")
-    if tiene_partes:
-        partes.append(f"está compuesto por {', '.join(set(tiene_partes))}")
+        partes.append(f"es parte de {', '.join(set(parte_de))}")
+
+    # Información de tiene como parte
+    if tiene_como_parte:
+        partes.append(f"tiene como parte {', '.join(set(tiene_como_parte))}")
+
+    # Información de fabricante
     if fabricante:
         partes.append(f"fue fabricado por {', '.join(set(fabricante))}")
-    if patrocinador:
-        partes.append(f"patrocinado por {', '.join(set(patrocinador))}")
-    if participante:
-        partes.append(f"con participación de {', '.join(set(participante))}")
-    if basado_en:
-        partes.append(f"basado en {', '.join(set(basado_en))}")
 
+    # Información de patrocinado por
+    if patrocinado_por:
+        partes.append(f"fue patrocinado por {', '.join(set(patrocinado_por))}")
+
+    # Información de participante
+    if participante:
+        partes.append(f"participó en {', '.join(set(participante))}")
+
+    # Información de predecesor
+    if predecesor:
+        partes.append(f"su predecesor fue {', '.join(set(predecesor))}")
+
+    # Información de sucesor
+    if sucesor:
+        partes.append(f"su sucesor fue {', '.join(set(sucesor))}")
+
+    # Información de basado en
+    if basado_en:
+        partes.append(f"está basado en {', '.join(set(basado_en))}")
+
+    # Información de autor de la obra
+    if autor_obra:
+        partes.append(f"fue obra de {', '.join(set(autor_obra))}")
+
+    # Información de versión o edición de
+    if version_edicion:
+        partes.append(f"es una versión o edición de {', '.join(set(version_edicion))}")
+
+    # Datos de deportes
+    miembro_equipo = extraer_valor("Miembro de equipo deportivo")
+    numero_victorias = extraer_valor("Número de victorias")
+    numero_derrotas = extraer_valor("Número de derrotas")
+    deporte_practicado = extraer_valor("Deporte practicado")
+
+    # Información de miembro de equipo deportivo
+    if miembro_equipo:
+        partes.append(f"fue miembro de {', '.join(set(miembro_equipo))}")
+
+    # Información de número de victorias
+    if numero_victorias:
+        partes.append(f"tiene {', '.join(set(numero_victorias))} victorias")
+
+    # Información de número de derrotas
+    if numero_derrotas:
+        partes.append(f"y {', '.join(set(numero_derrotas))} derrotas")
+
+    # Información de deporte practicado
+    if deporte_practicado:
+        partes.append(f"practicó {', '.join(set(deporte_practicado))}")
+
+    # Datos musicales
+    numero_catalogo = extraer_valor("Número de catálogo")
+    id_musicbrainz = extraer_valor("ID MusicBrainz")
+
+    # Información de número de catálogo
+    if numero_catalogo:
+        partes.append(f"su número de catálogo es {', '.join(set(numero_catalogo))}")
+
+    # Información de ID MusicBrainz
+    if id_musicbrainz:
+        partes.append(f"su ID en MusicBrainz es {', '.join(set(id_musicbrainz))}")
+
+    # Datos de tecnología/software
+    desarrollador = extraer_valor("Desarrollador")
+    version = extraer_valor("Versión")
+    licencia = extraer_valor("Licencia")
+    sitio_web = extraer_valor("Sitio web oficial del software")
+
+    # Información de desarrollador
+    if desarrollador:
+        partes.append(f"fue desarrollado por {', '.join(set(desarrollador))}")
+
+    # Información de versión
+    if version:
+        partes.append(f"su versión es {', '.join(set(version))}")
+
+    # Información de licencia
+    if licencia:
+        partes.append(f"su licencia es {', '.join(set(licencia))}")
+
+    # Información de sitio web oficial
+    if sitio_web:
+        partes.append(f"su sitio web oficial es {', '.join(set(sitio_web))}")
+
+    # 🏛 Cultura / Historia
+    lugar_exposicion = extraer_valor("Lugar de exposición")
+    periodo_historico = extraer_valor("Período histórico")
+    proyecto_artistico = extraer_valor("Proyecto artístico")
+
+    # 🦠 Biología / Ciencia
+    especie = extraer_valor("Especie")
+    organismo_relacionado = extraer_valor("Organismo relacionado")
+    funcion_biologica = extraer_valor("Función biológica")
+    propiedades_geneticas = extraer_valor("Propiedades genéticas")
+
+    # Información de lugar de exposición
+    if lugar_exposicion:
+        partes.append(f"se expuso en {', '.join(set(lugar_exposicion))}")
+
+    # Información de período histórico
+    if periodo_historico:
+        partes.append(f"pertenece al período histórico de {', '.join(set(periodo_historico))}")
+
+    # Información de proyecto artístico
+    if proyecto_artistico:
+        partes.append(f"fue parte del proyecto artístico {', '.join(set(proyecto_artistico))}")
+
+    # Información de especie
+    if especie:
+        partes.append(f"pertenece a la especie {', '.join(set(especie))}")
+
+    # Información de organismo relacionado
+    if organismo_relacionado:
+        partes.append(f"está relacionado con {', '.join(set(organismo_relacionado))}")
+
+    # Información de función biológica
+    if funcion_biologica:
+        partes.append(f"su función biológica es {', '.join(set(funcion_biologica))}")
+
+    # Información de propiedades genéticas
+    if propiedades_geneticas:
+        partes.append(f"tiene las siguientes propiedades genéticas: {', '.join(set(propiedades_geneticas))}")
+
+    # 🚗 Vehículos / Transportes
+    compania_aerea = extraer_valor("Compañía aérea")
+    propietario_vehiculo = extraer_valor("Propietario del vehículo")
+    tipo_transporte = extraer_valor("Tipo de transporte")
+
+    # 🏠 Construcción / Arquitectura
+    tipo_edificio = extraer_valor("Tipo de edificio")
+    material_construccion = extraer_valor("Material de construcción")
+    arquitecto = extraer_valor("Arquitecto")
+
+    # 🍽 Alimentos
+    ingrediente_principal = extraer_valor("Ingrediente principal")
+    metodo_preparacion = extraer_valor("Método de preparación")
+
+    # Información de compañía aérea
+    if compania_aerea:
+        partes.append(f"es operado por la compañía aérea {', '.join(set(compania_aerea))}")
+
+    # Información de propietario del vehículo
+    if propietario_vehiculo:
+        partes.append(f"su propietario es {', '.join(set(propietario_vehiculo))}")
+
+    # Información de tipo de transporte
+    if tipo_transporte:
+        partes.append(f"es un {', '.join(set(tipo_transporte))}")
+
+    # Información de tipo de edificio
+    if tipo_edificio:
+        partes.append(f"es un tipo de edificio {', '.join(set(tipo_edificio))}")
+
+    # Información de material de construcción
+    if material_construccion:
+        partes.append(f"está construido con {', '.join(set(material_construccion))}")
+
+    # Información de arquitecto
+    if arquitecto:
+        partes.append(f"fue diseñado por {', '.join(set(arquitecto))}")
+
+    # Información de ingrediente principal
+    if ingrediente_principal:
+        partes.append(f"su ingrediente principal es {', '.join(set(ingrediente_principal))}")
+
+    # Información de método de preparación
+    if metodo_preparacion:
+        partes.append(f"su método de preparación es {', '.join(set(metodo_preparacion))}")
+
+    # 🌿 Medio ambiente / Naturaleza
+    habita_en = extraer_valor("Habita en")
+    requiere = extraer_valor("Requiere")
+
+    # 💡 Invenciones
+    nombre_invento = extraer_valor("Nombre del invento")
+    patente = extraer_valor("Patente")
+
+    # Información de hábitat
+    if habita_en:
+        partes.append(f"habita en {', '.join(set(habita_en))}")
+
+    # Información de requisitos
+    if requiere:
+        partes.append(f"requiere {', '.join(set(requiere))}")
+
+    # Información de nombre del invento
+    if nombre_invento:
+        partes.append(f"su invento se llama {', '.join(set(nombre_invento))}")
+
+    # Información de patente
+    if patente:
+        partes.append(f"su patente es {', '.join(set(patente))}")
 
     resumen += ", " + ", ".join(partes) + "."
 
@@ -516,6 +1011,177 @@ def predecir_nli_traducido(premisa_es, hipotesis_es):
 def predecir_con_oracion(evidencia_es, hipotesis_es):
     pred, probs = predecir_nli_traducido(evidencia_es, hipotesis_es)
     return pred, probs
+
+
+def extraer_oraciones_jsonl(path_archivo):
+    oraciones = []
+    with open(path_archivo, 'r', encoding='utf-8') as archivo:
+        for linea in archivo:
+            if linea.strip():  # Ignorar líneas vacías
+                datos = json.loads(linea)
+                oracion = datos.get("claim_es")
+                if oracion:
+                    oraciones.append(oracion)
+    return oraciones
+
+
+def extraer_sujetos_prueba():
+    ruta_entrada = "../datasets/dataset_espanol.jsonl"
+    ruta_salida = "../resultados_pruebas/sujetos.jsonl"
+    numero_oracion = 0
+
+    oraciones = extraer_oraciones_jsonl(ruta_entrada)
+
+    with open(ruta_salida, 'w', encoding='utf-8') as f_out:
+        for oracion in oraciones:
+            numero_oracion += 1
+            print(f"Oracion: {numero_oracion}/2000")
+            sujeto = extraer_sujeto(oracion)
+            qid, label, descripcion = buscar_entidad_wikidata(sujeto) if sujeto else (None, None, None)
+
+            estado = "correct" if sujeto and qid else "error"
+
+            resultado = {
+                "oracion": oracion,
+                "sujeto": sujeto,
+                "qid": qid,
+                "estado": estado
+            }
+
+            f_out.write(json.dumps(resultado, ensure_ascii=False) + '\n')
+            f_out.flush()  # Asegura que se escribe en tiempo real
+
+def extraer_sujetos_prueba_openai():
+    ruta_entrada = "../datasets/dataset_espanol.jsonl"
+    ruta_salida = "../resultados_pruebas/sujetos_openai.jsonl"
+    numero_oracion = 0
+
+    oraciones = extraer_oraciones_jsonl(ruta_entrada)
+
+    with open(ruta_salida, 'w', encoding='utf-8') as f_out:
+        for oracion in oraciones:
+            numero_oracion += 1
+            print(f"Oracion: {numero_oracion}/2000")
+            sujeto = extraer_sujeto_openai(oracion)
+            qid, label, descripcion = buscar_entidad_wikidata(sujeto) if sujeto else (None, None, None)
+
+            estado = "correct" if sujeto and qid else "error"
+
+            resultado = {
+                "oracion": oracion,
+                "sujeto": sujeto,
+                "qid": qid,
+                "estado": estado
+            }
+
+            f_out.write(json.dumps(resultado, ensure_ascii=False) + '\n')
+            f_out.flush()  # Asegura que se escribe en tiempo real
+
+def combinar_claims_con_qid(ruta_entrada, ruta_sujetos):
+    # Cargar sujetos en un diccionario para acceso rápido por oración
+    sujetos_dict = {}
+    with open(ruta_sujetos, 'r', encoding='utf-8') as f:
+        for linea in f:
+            entrada = json.loads(linea)
+            sujetos_dict[entrada['oracion']] = {
+                'qid': entrada['qid'],
+                'sujeto': entrada['sujeto']
+            }
+
+    # Combinar datos
+    combinados = []
+    with open(ruta_entrada, 'r', encoding='utf-8') as f:
+        for linea in f:
+            entrada = json.loads(linea)
+            claim = entrada['claim_es']
+            label = entrada['label']
+            info_sujeto = sujetos_dict.get(claim)
+
+            if info_sujeto:  # Solo si se encontró qid y sujeto correspondiente
+                combinados.append({
+                    'claim_es': claim,
+                    'label': label,
+                    'qid': info_sujeto['qid'],
+                    'sujeto': info_sujeto['sujeto']
+                })
+
+    return combinados
+
+import json
+
+def benchmark_con_spacy():
+    ruta_entrada = "../datasets/dataset_espanol.jsonl"
+    ruta_sujetos = "../resultados_pruebas/sujetos.jsonl"
+    ruta_salida = "../resultados_pruebas/benchmark_spacy.jsonl"
+    
+    datos = combinar_claims_con_qid(ruta_entrada, ruta_sujetos)
+
+    with open(ruta_salida, 'w', encoding='utf-8') as f_salida:
+        pass  # Limpiamos el archivo antes de empezar
+
+    for dato in datos:
+        oracion = dato["claim_es"]
+        resultado_correcto = dato["label"]
+        qid = dato["qid"]
+        sujeto = dato["sujeto"]
+
+        print(dato)
+
+        if qid:
+            hechos = recuperar_hechos(qid)
+            tipos_qids = obtener_tipo_entidad(qid)
+            tipos_etiquetas = resolver_qids(tipos_qids)
+            oracion_datos = generar_oracion_resumen_con_etiquetas(sujeto, hechos, tipos_etiquetas)
+            pred, probs = predecir_con_oracion(oracion_datos, oracion)
+
+            resultado = {
+                "oracion": oracion,
+                "entidad": sujeto,
+                "oracion_creada": oracion_datos,
+                "prediccion": pred,
+                "confianza": probs,
+                "resultado_correcto": resultado_correcto
+            }
+
+            with open(ruta_salida, 'a', encoding='utf-8') as f_salida:
+                f_salida.write(json.dumps(resultado, ensure_ascii=False) + '\n')
+
+def benchmark_con_openai():
+    ruta_entrada = "../datasets/dataset_espanol.jsonl"
+    ruta_sujetos = "../resultados_pruebas/sujetos_openai.jsonl"
+    ruta_salida = "../resultados_pruebas/benchmark_openai.jsonl"
+    
+    datos = combinar_claims_con_qid(ruta_entrada, ruta_sujetos)
+
+    with open(ruta_salida, 'w', encoding='utf-8') as f_salida:
+        pass  # Limpiamos el archivo antes de empezar
+
+    for dato in datos:
+        oracion = dato["claim_es"]
+        resultado_correcto = dato["label"]
+        qid = dato["qid"]
+        sujeto = dato["sujeto"]
+
+        print(dato)
+
+        if qid:
+            hechos = recuperar_hechos(qid)
+            tipos_qids = obtener_tipo_entidad(qid)
+            tipos_etiquetas = resolver_qids(tipos_qids)
+            oracion_datos = generar_oracion_resumen_con_etiquetas(sujeto, hechos, tipos_etiquetas)
+            pred, probs = predecir_con_oracion(oracion_datos, oracion)
+
+            resultado = {
+                "oracion": oracion,
+                "entidad": sujeto,
+                "oracion_creada": oracion_datos,
+                "prediccion": pred,
+                "confianza": probs,
+                "resultado_correcto": resultado_correcto
+            }
+
+            with open(ruta_salida, 'a', encoding='utf-8') as f_salida:
+                f_salida.write(json.dumps(resultado, ensure_ascii=False) + '\n')
 
 
 
@@ -609,10 +1275,7 @@ def procesar_texto(texto):
 if __name__ == "__main__":
 
     '''
-    texto = """
-    GitHub fue fundado por Tom Preston-Werner, Chris Wanstrath, PJ Hyett y Scott Chacon en 2007.
-    GitHub es una plataforma de desarrollo colaborativo de software y un servicio de control de versiones usando Git.
-    El escritor J.K. Rowling nació en Yate, Inglaterra. 
+        texto = """
     El poeta Miguel Hernandez no nació en España. 
     Escribió Cien años de soledad. 
     Gabriel García Márquez no escribió Cien años de soledad. 
@@ -621,8 +1284,13 @@ if __name__ == "__main__":
     Tierra gira alrededor del Sol.
     """
     analizar_texto(texto)
-    '''
 
+
+    benchmark_con_spacy()
     texto = sys.stdin.read()
     resultado = procesar_texto(texto)
     print(json.dumps(resultado))
+
+    '''
+
+    benchmark_con_openai()

@@ -162,12 +162,6 @@ body {
     100% { content: ''; }
   }
   
-  /* Gráficas */
-  #graficoCorrectas, #graficoNeutrales, #graficoContradicciones {
-    max-width: 300px;
-    margin: 20px auto;
-  }
-  
 /* Estilo para las gráficas con animación */
 .grafico {
     display: inline-block;
