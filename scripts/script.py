@@ -1257,6 +1257,8 @@ def procesar_texto(texto):
             oracion = f'<span class="subrayado-contradiction">{oracion}</span>'
         elif pred == "neutral":
             oracion = f'<span class="subrayado-neutral">{oracion}</span>'
+        else:
+            oracion = f'<span class="subrayado-correcto">{oracion}</span>'
 
         oraciones_etiquetadas.append(oracion)
 

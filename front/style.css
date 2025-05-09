@@ -87,6 +87,14 @@ body {
     margin-right: 5px;
   }
 
+  .circulo-rojo {
+    width: 15px;
+    height: 15px;
+    background-color: #F28B82;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
   .circulo-amarillo {
     width: 15px;
     height: 15px;
@@ -117,7 +125,7 @@ body {
   
   /* Subrayados */
   .subrayado-contradiction {
-    background-color: #add8e6;
+    background-color: #F28B82;
     padding: 2px 4px;
     border-radius: 4px;
     font-weight: bold;
@@ -126,6 +134,14 @@ body {
   
   .subrayado-neutral {
     background-color: #f0e68c;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: black;
+  }
+
+  .subrayado-correcto {
+    background-color: #a8e0a8;
     padding: 2px 4px;
     border-radius: 4px;
     font-weight: bold;

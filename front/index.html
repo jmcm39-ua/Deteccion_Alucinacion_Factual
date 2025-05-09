@@ -39,12 +39,16 @@
   <div id="leyenda" class="d-flex align-items-center justify-content-center mb-3" style="display: none;">
     <div id="aux-leyenda" style="display: flex; justify-content: center; flex-direction: column;">
       <div id="leyenda-1"style="display: none; justify-content: center; padding: 5px;">
-        <span class="circulo-azul"></span>
+        <span class="circulo-rojo"></span>
         <span class="ms-2">Alucinación factual: la IA ha generado contenido que contradice hechos factuales.</span>
       </div>
        <div id="leyenda-2" style="display: none; justify-content: center; padding: 5px;">
         <span class="circulo-amarillo"></span>
         <span class="ms-2">Sin determinar: No se ha podido comprobar si está respaldado por un hecho factual.</span>
+      </div>
+      <div id="leyenda-3"style="display: none; justify-content: center; padding: 5px;">
+        <span class="circulo-verde"></span>
+        <span class="ms-2">Correcta: la IA ha generado contenido correcto.</span>
       </div>
     </div>
         
@@ -55,7 +59,7 @@
     <div id="checkbox-options-aux" class="row w-100 justify-content-center" style="display: none;">
       <div class="col-auto">
         <label class="d-inline-flex align-items-center me-4">
-          <input type="checkbox" id="checkbox-correcta" checked class="me-2"> Subrayar correctas
+          <input type="checkbox" id="checkbox-correct" checked class="me-2"> Subrayar correctas
         </label>
       </div>
       <div class="col-auto">

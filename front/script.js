@@ -66,6 +66,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     const leyendaDiv = document.getElementById('leyenda');
     const leyenda1Div = document.getElementById('leyenda-1');
     const leyenda2Div = document.getElementById('leyenda-2');
+    const leyenda3Div = document.getElementById('leyenda-3');
     const leyendaauxDiv = document.getElementById('aux-leyenda');
     const spinner = document.getElementById('spinner');
     const spinnerTexto = document.getElementById('spinner-texto');
@@ -80,6 +81,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     const filtrosGrafico = document.getElementById('filtros-grafico');
     const checkboxContradiction = document.getElementById('checkbox-contradiction');
     const checkboxNeutral = document.getElementById('checkbox-neutral');
+    const checkboxCorrect = document.getElementById('checkbox-correct');
     const checkboxOpciones = document.getElementById('checkbox-options');
     const checkboxOpcionesAux = document.getElementById('checkbox-options-aux');
 
@@ -89,6 +91,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     leyendaDiv.style.display = 'none';
     leyenda1Div.style.display = 'none';
     leyenda2Div.style.display = 'none';
+    leyenda3Div.style.display = 'none';
     leyendaauxDiv.style.display = 'none';
     graficasResumenDiv.style.display = 'none';
     resumenGlobalDiv.style.display = 'none';
@@ -103,6 +106,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     resumenContradiccion.style.display = 'none'; 
     checkboxNeutral.style.display = 'none';
     checkboxContradiction.style.display = 'none';
+    checkboxCorrect.style.display = 'none';
     checkboxOpciones.style.display = 'none';
     checkboxOpcionesAux.style.display = 'none';
 
@@ -121,12 +125,14 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         leyendaDiv.style.display = 'flex';
         leyenda1Div.style.display = 'flex';
         leyenda2Div.style.display = 'flex';
+        leyenda3Div.style.display = 'flex';
         leyendaauxDiv.style.display = 'flex';
         resultadoDiv.style.display = 'block';
         checkboxOpciones.style.display = 'flex';
         checkboxOpcionesAux.style.display = 'flex';
         checkboxContradiction.style.display = 'flex';
         checkboxNeutral.style.display = 'flex';
+        checkboxCorrect.style.display = 'flex';
         data_original = data.texto_etiquetado;
         resultadoDiv.innerHTML = data.texto_etiquetado;
 
@@ -150,6 +156,14 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
             // Si no está seleccionado, eliminamos el subrayado de neutral
             contenido = contenido.replace(/<span class="subrayado-neutral">(.*?)<\/span>/gi, '$1');
             }
+
+            // Si el checkbox de correcto está seleccionado, aplicamos el subrayado correspondiente
+            if (checkboxCorrect.checked) {
+                contenido = contenido.replace(/(correctas)/gi, '<span class="subrayado-correcto">$1</span>');
+                } else {
+                // Si no está seleccionado, eliminamos el subrayado de neutral
+                contenido = contenido.replace(/<span class="subrayado-correcto">(.*?)<\/span>/gi, '$1');
+                }
               // Actualizar el HTML con el contenido modificado
             resultadoDiv.innerHTML = contenido;
         }
@@ -157,6 +171,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
         // Llamar a la función cada vez que se cambie el estado de los checkboxes
         checkboxContradiction.addEventListener('change', aplicarSubrayado);
         checkboxNeutral.addEventListener('change', aplicarSubrayado);
+        checkboxCorrect.addEventListener('change',aplicarSubrayado);
 
         // Inicializar la función para aplicar el subrayado al cargar
         aplicarSubrayado();
@@ -204,7 +219,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
                 labels: ['Correctas', 'Sin Determinar', 'Contradicciones'],
                 datasets: [{
                     data: [correctas, neutrales, contradicciones],
-                    backgroundColor: ['#a8e0a8', '#f0e68c', '#add8e6'],
+                    backgroundColor: ['#a8e0a8', '#f0e68c', '#F28B82'],
                     borderWidth: 0
                 }]
             },
@@ -265,7 +280,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
             if (checkboxes.contradicciones.checked) {
                 nuevaData.push(contradicciones);
                 nuevasEtiquetas.push('Contradicciones');
-                nuevosColores.push('#add8e6');
+                nuevosColores.push('#F28B82');
             }
 
             const chart = chartInstances['graficoResumen'];
