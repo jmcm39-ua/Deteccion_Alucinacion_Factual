@@ -994,8 +994,11 @@ def predecir_nli(premisa, hipotesis):
 
 def predecir_nli_traducido(premisa_es, hipotesis_es):
     # Traducimos ambas al inglés
+    #print(premisa_es)
     premisa_en = traducir_es_en(premisa_es)
+    #print(premisa_en)
     hipotesis_en = traducir_es_en(hipotesis_es)
+    #print(hipotesis_en)
 
     # Hacemos predicción con el modelo NLI en inglés
     inputs = tokenizer_nli(premisa_en, hipotesis_en, return_tensors="pt", truncation=True)
@@ -1290,6 +1293,10 @@ if __name__ == "__main__":
 
     benchmark_con_openai()
     benchmark_con_spacy()
+
+    texto = sys.stdin.read()
+    resultado = procesar_texto(texto)
+    print(json.dumps(resultado))
 
     '''
 

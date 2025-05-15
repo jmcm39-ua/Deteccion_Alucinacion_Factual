@@ -78,7 +78,6 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     const resumenCorrecta = document.getElementById('resumen-correctas');
     const resumenNeutral = document.getElementById('resumen-neutrales');
     const resumenContradiccion = document.getElementById('resumen-contradicciones');
-    const filtrosGrafico = document.getElementById('filtros-grafico');
     const checkboxContradiction = document.getElementById('checkbox-contradiction');
     const checkboxNeutral = document.getElementById('checkbox-neutral');
     const checkboxCorrect = document.getElementById('checkbox-correct');
@@ -97,7 +96,6 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     resumenGlobalDiv.style.display = 'none';
     titulo1Div.style.display = 'none';
     titulo3Div.style.display = 'none';
-    filtrosGrafico.style.display = 'none';
     spinner.style.display = 'block';
     spinnerTexto.style.display = 'block';
     resumenTotal.style.display = 'none'; 
@@ -111,7 +109,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
     checkboxOpcionesAux.style.display = 'none';
 
 
-    fetch('http://localhost:3000/api/etiquetar', {
+    fetch('http://localhost:3000/deteccion/etiquetar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ texto: texto })
@@ -193,7 +191,7 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
             mensaje = "¡Todo correcto! No se ha detectado anomalías en el texto.";
             color = "green";
         } else if (porcentajeNeutrales > porcentajeCorrectas && porcentajeNeutrales > porcentajeContradicciones) {
-            mensaje = "!Cuidado! No se ha podido verificar completamente el texto.";
+            mensaje = "¡Cuidado! No se ha podido verificar completamente el texto.";
             color = "orange";
         } else {
             mensaje = "¡Alerta! Se ha detectado información no fiable en el texto introducido."
@@ -253,53 +251,12 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
             }
         });
 
-        // Mostrar y manejar filtros (checkboxes)
-        filtrosGrafico.style.display = 'block';
-
-        const checkboxes = {
-            correctas: document.getElementById('check-correctas'),
-            neutrales: document.getElementById('check-neutrales'),
-            contradicciones: document.getElementById('check-contradicciones')
-        };
-
-        function actualizarGraficoResumen() {
-            const nuevaData = [];
-            const nuevasEtiquetas = [];
-            const nuevosColores = [];
-
-            if (checkboxes.correctas.checked) {
-                nuevaData.push(correctas);
-                nuevasEtiquetas.push('Correctas');
-                nuevosColores.push('#a8e0a8');
-            }
-            if (checkboxes.neutrales.checked) {
-                nuevaData.push(neutrales);
-                nuevasEtiquetas.push('Sin Determinar');
-                nuevosColores.push('#f0e68c');
-            }
-            if (checkboxes.contradicciones.checked) {
-                nuevaData.push(contradicciones);
-                nuevasEtiquetas.push('Contradicciones');
-                nuevosColores.push('#F28B82');
-            }
-
-            const chart = chartInstances['graficoResumen'];
-            chart.data.labels = nuevasEtiquetas;
-            chart.data.datasets[0].data = nuevaData;
-            chart.data.datasets[0].backgroundColor = nuevosColores;
-            chart.update();
-        }
-
-        Object.values(checkboxes).forEach(checkbox => {
-            checkbox.addEventListener('change', actualizarGraficoResumen);
-        });
-
         resumenTotal.style.display = 'flex'; 
         resumenCorrecta.style.display = 'block'; 
         resumenNeutral.style.display = 'block'; 
         resumenContradiccion.style.display = 'block'; 
         resumenTotal.textContent = `Total de oraciones analizadas: ${total}`;
-        resumenCorrecta.textContent = `Correctas (entailment): ${correctas} (${porcentajeCorrectas.toFixed(2)}%)`;
+        resumenCorrecta.textContent = `Correctas: ${correctas} (${porcentajeCorrectas.toFixed(2)}%)`;
         resumenNeutral.textContent = `Sin determinar: ${neutrales} (${porcentajeNeutrales.toFixed(2)}%)`;
         resumenContradiccion.textContent = `Contradicciones: ${contradicciones} (${porcentajeContradicciones.toFixed(2)}%)`;
 

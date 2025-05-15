@@ -7,8 +7,8 @@ from openai import AzureOpenAI
 
 client = AzureOpenAI(
     api_version="2024-12-01-preview",
-    azure_endpoint="https://jmcm3-ma9zw1ui-eastus2.cognitiveservices.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2025-01-01-preview",
-    api_key="DJWhkAGempaCxFHm9NLXXCG3iCow3k6I8gP7G3hx57YV0JIBa2idJQQJ99BEACHYHv6XJ3w3AAAAACOGiTQH"
+    azure_endpoint="tu-endpoint",
+    api_key="tu-api"
 )
 
 def traducir_con_azure_openai(texto):
@@ -93,5 +93,5 @@ def extraer_sujeto_openai(oracion):
         return mensaje
     
     except Exception as e:
-        print(f"Error al traducir con Azure OpenAI: {e}")
+        print(f"Error al obtener el sujeto con Azure OpenAI: {e}")
         return ""

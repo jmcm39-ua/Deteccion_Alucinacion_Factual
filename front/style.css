@@ -212,14 +212,28 @@ body {
     max-width: 300px;
   }
 
-  .contenido-centrado {
-    max-width: 900px;  
-    margin: 0 auto;     
+  .contenedor-mencion {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* separación pequeña entre imagen y texto */
+    max-width: 1500px;
+    margin: 0 auto;
     padding: 20px;
-    display: flex;      
-    flex-wrap: wrap;    
-    gap: 30px;     
-    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .contenedor-mencion img {
+    max-width: 300px;
+    height: auto;
+    margin: 0;
+  }
+
+  .contenedor-mencion p {
+    margin: 0;
+    font-size: 1em;
+    line-height: 1.5;
+    text-align: justify;
+    flex: 1; /* para que el texto use el espacio restante */
   }
   
   .elementor-container {

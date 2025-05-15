@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post('/api/etiquetar', (req, res) => {
+app.post('/deteccion/etiquetar', (req, res) => {
     const texto = req.body.texto;
     console.log('Solicitud recibida: /api/etiquetar');
     console.log('Texto recibido:', texto);
