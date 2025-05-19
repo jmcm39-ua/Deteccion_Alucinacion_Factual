@@ -43,6 +43,21 @@ node api.js
 ```
 Abrir el archivo index.html.
 
+## Créditos
+
+Este proyecto utiliza un dataset proporcionado por ZJUNLP bajo la Licencia MIT.
+
+Copyright (c) 2024 ZJUNLP
+
+Ver licencia completa en: https://github.com/zjunlp/FactCHD/blob/main/LICENSE
+
+## Licencia
+
+Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo [LICENSE](./LICENSE) para más información.
+
+
+
+
 
 
 
