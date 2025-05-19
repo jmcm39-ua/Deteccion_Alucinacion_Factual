@@ -7,6 +7,7 @@ import requests
 from difflib import get_close_matches
 import sys
 import json
+import re
 import warnings
 from openai_service import extraer_sujeto_openai
 warnings.filterwarnings("ignore")
@@ -19,17 +20,11 @@ logging.set_verbosity_error()
 nlp = spacy.load("es_core_news_md")
 nlp_en = spacy.load("en_core_web_trf")
 
-
-# Modelo NLI
-tokenizer = AutoTokenizer.from_pretrained("PlanTL-GOB-ES/roberta-large-bne-te")
-model = AutoModelForSequenceClassification.from_pretrained("PlanTL-GOB-ES/roberta-large-bne-te")
-model.eval()
-
 # Modelo traducción inglés
 modelo_trad = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-es-en")
 tokenizer_trad = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-es-en")
 
-#Rigoberta asociacion -> Castellano flor,
+# Modelo NLI
 modelo_nli = AutoModelForSequenceClassification.from_pretrained("roberta-large-mnli")
 tokenizer_nli = AutoTokenizer.from_pretrained("roberta-large-mnli")
 
@@ -77,7 +72,7 @@ def extraer_sujeto(oracion):
 
 #Función de búsqueda de entidades
 def buscar_entidad_wikidata(nombre):
-        #print(f"Buscando entidad en Wikidata para: {nombre}")
+    #print(f"Buscando entidad en Wikidata para: {nombre}")
         
     url = f"https://www.wikidata.org/w/api.php?action=wbsearchentities&search={nombre}&language=es&format=json"
     response = requests.get(url)
@@ -164,7 +159,7 @@ def recuperar_hechos(qid):
             hechos.append(f"{descripcion_corta}.")
 
         propiedades = {
-            # 🧑 Personas
+            # Personas
             'P106': 'Ocupación',
             'P166': 'Premio recibido',
             'P19': 'Lugar de nacimiento',
@@ -185,7 +180,7 @@ def recuperar_hechos(qid):
             'P3095': 'Personaje interpretado',
             'P108': 'Empleado en',
 
-            # 🎬 Películas / Producciones audiovisuales
+            # Películas / Producciones audiovisuales
             'P57': 'Director',
             'P58': 'Guionista',
             'P161': 'Reparto',
@@ -197,7 +192,7 @@ def recuperar_hechos(qid):
             'P2142': 'Ingresos brutos',
             'P1476': 'Título oficial',
 
-            # 📚 Libros / Obras
+            # Libros / Obras
             'P50': 'Autor',
             'P577': 'Fecha de publicación',
             'P110': 'Ilustrador',
@@ -209,7 +204,7 @@ def recuperar_hechos(qid):
             'P655': 'Título original',
             'P98': 'Editor literario',
 
-            # 🏢 Organizaciones / Empresas
+            # Organizaciones / Empresas
             'P112': 'Fundador',
             'P159': 'Sede',
             'P571': 'Fecha de fundación',
@@ -221,7 +216,7 @@ def recuperar_hechos(qid):
             'P2139': 'Recuento de ingresos',
             'P2403': 'Autoridad reguladora',
 
-            # 🌍 Lugares
+            # Lugares
             'P17': 'País',
             'P131': 'Ubicación administrativa',
             'P625': 'Coordenadas',
@@ -231,7 +226,7 @@ def recuperar_hechos(qid):
             'P1448': 'Nombre oficial',
             'P1464': 'Categoría de patrimonio',
 
-            # 🌌 Objetos astronómicos / Planetas
+            # Objetos astronómicos / Planetas
             'P2583': 'Clase espectral',
             'P2120': 'Gravedad superficial',
             'P2067': 'Masa',
@@ -243,7 +238,7 @@ def recuperar_hechos(qid):
             'P625': 'Coordenadas celestes',
             'P59': 'Constelación',
 
-            # 🔁 Relaciones / colaboraciones / composición
+            # Relaciones / colaboraciones / composición
             'P361': 'Parte de',
             'P527': 'Tiene como parte',
             'P176': 'Fabricante',
@@ -255,52 +250,52 @@ def recuperar_hechos(qid):
             'P50': 'Autor de la obra',
             'P629': 'Versión o edición de',
 
-            # 🏆 Deportes (por si aparecen atletas)
+            # Deportes (por si aparecen atletas)
             'P54': 'Miembro de equipo deportivo',
             'P1350': 'Número de victorias',
             'P1351': 'Número de derrotas',
             'P641': 'Deporte practicado',
 
-            # 🎶 Música
+            # Música
             'P676': 'Número de catálogo',
             'P435': 'ID MusicBrainz',
 
-            # 👨‍💻 Tecnología / Software
+            # Tecnología / Software
             'P178': 'Desarrollador',
             'P348': 'Versión',
             'P275': 'Licencia',
             'P1072': 'Sitio web oficial del software',
 
-            # 🏛 Cultura / Historia
+            # Cultura / Historia
             'P128': 'Lugar de exposición',
             'P573': 'Período histórico',
             'P2189': 'Proyecto artístico',
 
-            # 🦠 Biología / Ciencia
+            # Biología / Ciencia
             'P27': 'Especie',
             'P2219': 'Organismo relacionado',
             'P2313': 'Función biológica',
             'P679': 'Propiedades genéticas',
 
-            # 🚗 Vehículos / Transportes
+            # Vehículos / Transportes
             'P414': 'Compañía aérea',
             'P1098': 'Propietario del vehículo',
             'P3407': 'Tipo de transporte',
 
-            # 🏠 Construcción / Arquitectura
+            # Construcción / Arquitectura
             'P279': 'Tipo de edificio',
             'P152': 'Material de construcción',
             'P3179': 'Arquitecto',
 
-            # 🍽 Alimentos
+            # Alimentos
             'P476': 'Ingrediente principal',
             'P2067': 'Método de preparación',
 
-            # 🌿 Medio ambiente / Naturaleza
+            # Medio ambiente / Naturaleza
             'P720': 'Habita en',
             'P1632': 'Requiere',
 
-            # 💡 Invenciones
+            # Invenciones
             'P1799': 'Nombre del invento',
             'P3504': 'Patente',
 
@@ -351,7 +346,7 @@ def recuperar_hechos(qid):
         #print(f"Error al recuperar hechos: {e}")
         return []
 
-
+# Función para resolver QIDs a etiquetas
 def resolver_qids(qids):
     etiquetas = {}
     if not qids:
@@ -371,7 +366,6 @@ def resolver_qids(qids):
 
 
 def generar_oracion_resumen_con_etiquetas(nombre, hechos, tipos_etiquetas):
-    import re
 
     # Resolver etiquetas de hechos
     qids = re.findall(r'Q\d+', " ".join(hechos))
@@ -868,12 +862,12 @@ def generar_oracion_resumen_con_etiquetas(nombre, hechos, tipos_etiquetas):
     if sitio_web:
         partes.append(f"su sitio web oficial es {', '.join(set(sitio_web))}")
 
-    # 🏛 Cultura / Historia
+    # Cultura / Historia
     lugar_exposicion = extraer_valor("Lugar de exposición")
     periodo_historico = extraer_valor("Período histórico")
     proyecto_artistico = extraer_valor("Proyecto artístico")
 
-    # 🦠 Biología / Ciencia
+    # Biología / Ciencia
     especie = extraer_valor("Especie")
     organismo_relacionado = extraer_valor("Organismo relacionado")
     funcion_biologica = extraer_valor("Función biológica")
@@ -907,17 +901,17 @@ def generar_oracion_resumen_con_etiquetas(nombre, hechos, tipos_etiquetas):
     if propiedades_geneticas:
         partes.append(f"tiene las siguientes propiedades genéticas: {', '.join(set(propiedades_geneticas))}")
 
-    # 🚗 Vehículos / Transportes
+    # Vehículos / Transportes
     compania_aerea = extraer_valor("Compañía aérea")
     propietario_vehiculo = extraer_valor("Propietario del vehículo")
     tipo_transporte = extraer_valor("Tipo de transporte")
 
-    # 🏠 Construcción / Arquitectura
+    # Construcción / Arquitectura
     tipo_edificio = extraer_valor("Tipo de edificio")
     material_construccion = extraer_valor("Material de construcción")
     arquitecto = extraer_valor("Arquitecto")
 
-    # 🍽 Alimentos
+    # Alimentos
     ingrediente_principal = extraer_valor("Ingrediente principal")
     metodo_preparacion = extraer_valor("Método de preparación")
 
@@ -953,11 +947,11 @@ def generar_oracion_resumen_con_etiquetas(nombre, hechos, tipos_etiquetas):
     if metodo_preparacion:
         partes.append(f"su método de preparación es {', '.join(set(metodo_preparacion))}")
 
-    # 🌿 Medio ambiente / Naturaleza
+    # Medio ambiente / Naturaleza
     habita_en = extraer_valor("Habita en")
     requiere = extraer_valor("Requiere")
 
-    # 💡 Invenciones
+    # Invenciones
     nombre_invento = extraer_valor("Nombre del invento")
     patente = extraer_valor("Patente")
 
@@ -982,18 +976,8 @@ def generar_oracion_resumen_con_etiquetas(nombre, hechos, tipos_etiquetas):
     return resumen
 
 
-
-def predecir_nli(premisa, hipotesis):
-    inputs = tokenizer(premisa, hipotesis, return_tensors="pt", truncation=True)
-    with torch.no_grad():
-        logits = model(**inputs).logits
-    probs = torch.softmax(logits, dim=1).squeeze().tolist()
-    etiquetas = ["contradiction", "neutral", "entailment"]
-    prediccion = etiquetas[torch.argmax(logits)]
-    return prediccion, probs
-
+# Función para predecir NLI traduciendo al inglés
 def predecir_nli_traducido(premisa_es, hipotesis_es):
-    # Traducimos ambas al inglés
     #print(premisa_es)
     premisa_en = traducir_es_en(premisa_es)
     #print(premisa_en)
@@ -1010,12 +994,12 @@ def predecir_nli_traducido(premisa_es, hipotesis_es):
     return prediccion, probs
 
 
-
+# Función para predecir NLI con oraciones en español
 def predecir_con_oracion(evidencia_es, hipotesis_es):
     pred, probs = predecir_nli_traducido(evidencia_es, hipotesis_es)
     return pred, probs
 
-
+# Función para extraer oraciones de un archivo JSONL
 def extraer_oraciones_jsonl(path_archivo):
     oraciones = []
     with open(path_archivo, 'r', encoding='utf-8') as archivo:
@@ -1027,7 +1011,7 @@ def extraer_oraciones_jsonl(path_archivo):
                     oraciones.append(oracion)
     return oraciones
 
-
+# Función para extraer sujetos del dataset
 def extraer_sujetos_prueba():
     ruta_entrada = "../datasets/dataset_espanol.jsonl"
     ruta_salida = "../resultados_pruebas/sujetos.jsonl"
@@ -1052,8 +1036,9 @@ def extraer_sujetos_prueba():
             }
 
             f_out.write(json.dumps(resultado, ensure_ascii=False) + '\n')
-            f_out.flush()  # Asegura que se escribe en tiempo real
+            f_out.flush()
 
+# Función para extraer sujetos del dataset usando OpenAI
 def extraer_sujetos_prueba_openai():
     ruta_entrada = "../datasets/dataset_espanol.jsonl"
     ruta_salida = "../resultados_pruebas/sujetos_openai.jsonl"
@@ -1078,8 +1063,9 @@ def extraer_sujetos_prueba_openai():
             }
 
             f_out.write(json.dumps(resultado, ensure_ascii=False) + '\n')
-            f_out.flush()  # Asegura que se escribe en tiempo real
+            f_out.flush()
 
+# Función para combinar claims con QID
 def combinar_claims_con_qid(ruta_entrada, ruta_sujetos):
     # Cargar sujetos en un diccionario para acceso rápido por oración
     sujetos_dict = {}
@@ -1110,8 +1096,7 @@ def combinar_claims_con_qid(ruta_entrada, ruta_sujetos):
 
     return combinados
 
-import json
-
+# Función para realizar el benchmark con SpaCy
 def benchmark_con_spacy():
     ruta_entrada = "../datasets/dataset_espanol.jsonl"
     ruta_sujetos = "../resultados_pruebas/sujetos.jsonl"
@@ -1149,6 +1134,7 @@ def benchmark_con_spacy():
             with open(ruta_salida, 'a', encoding='utf-8') as f_salida:
                 f_salida.write(json.dumps(resultado, ensure_ascii=False) + '\n')
 
+# Función para realizar el benchmark con OpenAI
 def benchmark_con_openai():
     ruta_entrada = "../datasets/dataset_espanol.jsonl"
     ruta_sujetos = "../resultados_pruebas/sujetos_openai.jsonl"
@@ -1187,7 +1173,7 @@ def benchmark_con_openai():
                 f_salida.write(json.dumps(resultado, ensure_ascii=False) + '\n')
 
 
-
+# Función para analizar el texto introducido
 def analizar_texto(texto):
     oraciones = dividir_en_oraciones(texto)
     resultados = []
@@ -1215,7 +1201,6 @@ def analizar_texto(texto):
 
                 else:
                     hechos = []
-                    #oracion_datos = ""
             else:
                 sujeto = entidad_anterior
                 hechos = hechos_anterior
@@ -1239,6 +1224,7 @@ def analizar_texto(texto):
 
     return resultados, numero_oraciones
 
+# Función para procesar el texto y devolver resultados a la llamada API
 def procesar_texto(texto):
     resultados, numero_oraciones = analizar_texto(texto)
 
@@ -1276,7 +1262,7 @@ def procesar_texto(texto):
     }
 
 
-# Ejemplo de uso
+
 if __name__ == "__main__":
 
     '''

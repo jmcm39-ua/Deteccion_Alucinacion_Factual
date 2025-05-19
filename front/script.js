@@ -12,53 +12,6 @@ const observer = new IntersectionObserver((entries, observer) => {
 const graficos = document.querySelectorAll('.grafico');
 graficos.forEach(grafico => observer.observe(grafico));
 
-// Función para crear gráficos individuales
-function crearGrafico(id, label, porcentaje, color) {
-    const ctx = document.getElementById(id).getContext('2d');
-
-    if (chartInstances[id]) {
-        chartInstances[id].destroy();
-    }
-
-    chartInstances[id] = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: [label, 'Otro'],
-            datasets: [{
-                data: [porcentaje, 100 - porcentaje],
-                backgroundColor: [color, '#d3d3d3'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            animation: {
-                duration: 1500,
-                easing: 'easeOutBounce',
-                animateRotate: true,
-                animateScale: true
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            return tooltipItem.raw.toFixed(2) + '%';
-                        }
-                    }
-                },
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 10
-                    }
-                }
-            }
-        }
-    });
-}
-
 document.getElementById('enviarBtn').addEventListener('click', function () {
     const texto = document.getElementById('textoInput').value;
     const resultadoDiv = document.getElementById('resultado');
@@ -136,42 +89,32 @@ document.getElementById('enviarBtn').addEventListener('click', function () {
 
         // Función para aplicar subrayado basado en las selecciones
         function aplicarSubrayado() {
-            // Obtener el contenido del div de resultado
             let contenido = data_original;
         
-            // Si el checkbox de contradicción está seleccionado, aplicamos el subrayado correspondiente
             if (checkboxContradiction.checked) {
             contenido = contenido.replace(/(contradicciones)/gi, '<span class="subrayado-contradiction">$1</span>');
             } else {
-            // Si no está seleccionado, eliminamos el subrayado de contradicción
             contenido = contenido.replace(/<span class="subrayado-contradiction">(.*?)<\/span>/gi, '$1');
             }
         
-            // Si el checkbox de neutral está seleccionado, aplicamos el subrayado correspondiente
             if (checkboxNeutral.checked) {
             contenido = contenido.replace(/(neutrales)/gi, '<span class="subrayado-neutral">$1</span>');
             } else {
-            // Si no está seleccionado, eliminamos el subrayado de neutral
             contenido = contenido.replace(/<span class="subrayado-neutral">(.*?)<\/span>/gi, '$1');
             }
 
-            // Si el checkbox de correcto está seleccionado, aplicamos el subrayado correspondiente
             if (checkboxCorrect.checked) {
                 contenido = contenido.replace(/(correctas)/gi, '<span class="subrayado-correcto">$1</span>');
                 } else {
-                // Si no está seleccionado, eliminamos el subrayado de neutral
                 contenido = contenido.replace(/<span class="subrayado-correcto">(.*?)<\/span>/gi, '$1');
                 }
-              // Actualizar el HTML con el contenido modificado
             resultadoDiv.innerHTML = contenido;
         }
 
-        // Llamar a la función cada vez que se cambie el estado de los checkboxes
         checkboxContradiction.addEventListener('change', aplicarSubrayado);
         checkboxNeutral.addEventListener('change', aplicarSubrayado);
         checkboxCorrect.addEventListener('change',aplicarSubrayado);
 
-        // Inicializar la función para aplicar el subrayado al cargar
         aplicarSubrayado();
         
 

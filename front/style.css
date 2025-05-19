@@ -30,7 +30,6 @@ body {
     }
   }
   
-  /* Textarea grande y ancho */
   textarea {
     width: 90%;
     max-width: 1200px;
@@ -47,18 +46,18 @@ body {
     background-color: #ffffff;
   }
   
-  /* Botón grande */
+
   button {
-    padding: 30px 80px;  /* Aumenta el padding para hacerlo más grande */
+    padding: 30px 80px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 12px;  /* Aumentamos el radio para hacerlo más redondeado */
-    font-size: 1.6em;  /* Aumenta el tamaño de la fuente */
+    border-radius: 12px;
+    font-size: 1.6em;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 100%; /* Hace que el botón ocupe todo el ancho disponible */
-    max-width: 300px;  /* Limita el tamaño máximo del botón */
+    width: 100%;
+    max-width: 300px;
   }
   
   button:hover {
@@ -123,7 +122,7 @@ body {
     line-height: 2.5;
   }
   
-  /* Subrayados */
+
   .subrayado-contradiction {
     background-color: #F28B82;
     padding: 2px 4px;
@@ -148,7 +147,6 @@ body {
     color: black;
   }
   
-  /* Spinner */
   .spinner {
     border: 6px solid #f3f3f3;
     border-top: 6px solid #3498db;
@@ -183,14 +181,14 @@ body {
     display: inline-block;
     width: 30%;
     text-align: center;
-    opacity: 0;  /* Inicialmente invisible */
-    transform: translateY(50px); /* Desplazada hacia abajo */
-    transition: opacity 1s, transform 1s;  /* Animación de aparición */
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s, transform 1s;
 }
 
 .grafico.visible {
-    opacity: 1;  /* Aparece */
-    transform: translateY(0);  /* Vuelve a su posición original */
+    opacity: 1;
+    transform: translateY(0);
 }
   
   .grafico canvas {
@@ -215,7 +213,7 @@ body {
   .contenedor-mencion {
     display: flex;
     align-items: center;
-    gap: 20px; /* separación pequeña entre imagen y texto */
+    gap: 20px;
     max-width: 1500px;
     margin: 0 auto;
     padding: 20px;
@@ -233,7 +231,7 @@ body {
     font-size: 1em;
     line-height: 1.5;
     text-align: justify;
-    flex: 1; /* para que el texto use el espacio restante */
+    flex: 1;
   }
   
   .elementor-container {

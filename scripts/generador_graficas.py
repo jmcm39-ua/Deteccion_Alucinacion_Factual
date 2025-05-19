@@ -35,9 +35,9 @@ def generar_grafica_dataset(ruta_archivo, ruta_guardado="../graficas/distribucio
     # Estética
     plt.title("Distribución de oraciones", fontsize=13)
     plt.ylabel("Número de ejemplos", fontsize=12)
-    plt.grid(False)  # Eliminar líneas de cuadrícula
-    plt.tick_params(axis='y', left=False)  # Sin marcas en eje y
-    plt.box(False)  # Sin borde alrededor de la figura
+    plt.grid(False)
+    plt.tick_params(axis='y', left=False)
+    plt.box(False)
 
     # Guardar y mostrar
     plt.tight_layout()
@@ -104,7 +104,7 @@ def generar_matriz_confusion(archivo,salida):
         for linea in f:
             datos.append(json.loads(linea))
 
-    # Convertir a DataFrame
+
     df = pd.DataFrame(datos)
 
     # Obtener etiquetas reales y predichas
@@ -125,6 +125,77 @@ def generar_matriz_confusion(archivo,salida):
     plt.xlabel("Predicción del modelo")
     plt.ylabel("Etiqueta real")
     plt.title("Matriz de confusión: detección de alucinaciones factuales")
+    plt.tight_layout()
+    plt.savefig(salida, dpi=300)
+    plt.close()
+
+def generar_matriz_confusion_sin_neutral(archivo, salida):
+    datos = []
+    with open(archivo, "r", encoding="utf-8") as f:
+        for linea in f:
+            datos.append(json.loads(linea))
+
+    df = pd.DataFrame(datos)
+
+    # Filtrar fuera las predicciones 'neutral'
+    df_filtrado = df[df["prediccion"] != "neutral"]
+
+    # Mapear predicciones
+    df_filtrado["prediccion_mapeada"] = df_filtrado["prediccion"].map({
+        "contradiction": "NON-FACTUAL",
+        "entailment": "FACTUAL"
+    })
+
+    # Obtener etiquetas reales y predichas
+    y_true = df_filtrado["resultado_correcto"]
+    y_pred = df_filtrado["prediccion_mapeada"]
+
+    # Generar matriz de confusión
+    labels = ["FACTUAL", "NON-FACTUAL"]
+    matriz = confusion_matrix(y_true, y_pred, labels=labels)
+
+    # Crear heatmap
+    plt.figure(figsize=(6, 4))
+    sns.heatmap(matriz, annot=True, fmt="d", cmap="Pastel1", xticklabels=labels, yticklabels=labels)
+    plt.xlabel("Predicción del modelo")
+    plt.ylabel("Etiqueta real")
+    plt.title("Detección de alucinaciones factuales sin neutros")
+    plt.tight_layout()
+    plt.savefig(salida, dpi=300)
+    plt.close()
+
+def generar_matriz_confusion_sin_neutral_y_umbral(archivo, salida):
+    datos = []
+    with open(archivo, "r", encoding="utf-8") as f:
+        for linea in f:
+            datos.append(json.loads(linea))
+
+    df = pd.DataFrame(datos)
+    df['confianza_max'] = df['confianza'].apply(lambda x: max(x) if isinstance(x, list) and x else 0)
+
+    # Filtrar fuera las predicciones 'neutral'
+    df_filtrado = df[(df["prediccion"] != "neutral") & (df["confianza_max"] >= 0.7)].copy()
+
+    # Mapear predicciones
+    df_filtrado["prediccion_mapeada"] = df_filtrado["prediccion"].map({
+        "contradiction": "NON-FACTUAL",
+        "entailment": "FACTUAL"
+    })
+
+    # Obtener etiquetas reales y predichas
+    y_true = df_filtrado["resultado_correcto"]
+    y_pred = df_filtrado["prediccion_mapeada"]
+
+    # Generar matriz de confusión
+    labels = ["FACTUAL", "NON-FACTUAL"]
+    matriz = confusion_matrix(y_true, y_pred, labels=labels)
+
+    # Crear heatmap
+    plt.figure(figsize=(6, 4))
+    sns.heatmap(matriz, annot=True, fmt="d", cmap="Pastel1", xticklabels=labels, yticklabels=labels)
+    plt.xlabel("Predicción del modelo")
+    plt.ylabel("Etiqueta real")
+    plt.title("Detección de alucinaciones factuales con umbral de confianza")
     plt.tight_layout()
     plt.savefig(salida, dpi=300)
     plt.close()
@@ -173,9 +244,6 @@ def generar_grafica_comparacion_resultados(archivo, salida):
     plt.close()
 
 def es_correcto(row):
-    # Correcto si:
-    # prediccion == 'contradiction' y resultado_correcto == 'non-factual'
-    # o prediccion == 'entailment' y resultado_correcto == 'factual'
     if (row['prediccion'] == 'contradiction' and row['resultado_correcto'] == 'NON-FACTUAL'):
         return True
     if (row['prediccion'] == 'entailment' and row['resultado_correcto'] == 'FACTUAL'):
@@ -188,8 +256,10 @@ def generar_graficas_confianza_separadas(archivo, salida):
         for linea in f:
             datos.append(json.loads(linea))
 
-    # Convertir a DataFrame
     df = pd.DataFrame(datos)
+
+    df = df[df["prediccion"] != "neutral"]
+
 
     # Extraer la confianza máxima de la lista en cada fila
     df['confianza_max'] = df['confianza'].apply(lambda x: max(x) if isinstance(x, list) and x else 0)
@@ -217,9 +287,14 @@ def generar_graficas_confianza_separadas(archivo, salida):
     plt.savefig(salida, dpi=300)
     plt.close()
 
-#generar_grafica_dataset("../datasets/dataset_espanol.jsonl")
-#analizar_extraccion_sujetos("../resultados_pruebas/sujetos_openai.jsonl")
-generar_matriz_confusion("../resultados_pruebas/benchmark_openai.jsonl","../graficas/confusion_openai.png")
+generar_grafica_dataset("../datasets/dataset_espanol.jsonl")
+analizar_extraccion_sujetos("../resultados_pruebas/sujetos_openai.jsonl")
+generar_matriz_confusion_sin_neutral("../resultados_pruebas/benchmark_openai.jsonl","../graficas/confusion_openai_sin_neutral.png")
+generar_matriz_confusion_sin_neutral("../resultados_pruebas/benchmark_spacy.jsonl","../graficas/confusion_spacy_sin_neutral.png")
 generar_grafica_comparacion_resultados("../resultados_pruebas/benchmark_openai.jsonl","../graficas/comparacion_openai.png")
 generar_graficas_confianza_separadas("../resultados_pruebas/benchmark_openai.jsonl","../graficas/confianza_openai.png")
+generar_graficas_confianza_separadas("../resultados_pruebas/benchmark_spacy.jsonl","../graficas/confianza_spacy.png")
+generar_matriz_confusion_sin_neutral_y_umbral("../resultados_pruebas/benchmark_openai.jsonl","../graficas/confusion_openai_sin_neutral_y_umbral.png")
+generar_matriz_confusion_sin_neutral_y_umbral("../resultados_pruebas/benchmark_spacy.jsonl","../graficas/confusion_spacy_sin_neutral_y_umbral.png")
+
 

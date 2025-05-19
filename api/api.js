@@ -12,7 +12,7 @@ app.post('/deteccion/etiquetar', (req, res) => {
     console.log('Solicitud recibida: /api/etiquetar');
     console.log('Texto recibido:', texto);
 
-    const python = spawn('python3', ['-W', 'ignore', '../scripts/script.py']); // -W ignore para ignorar los warnings
+    const python = spawn('python3', ['-W', 'ignore', '../scripts/script.py']);
 
     let data = '';
     let error = '';
