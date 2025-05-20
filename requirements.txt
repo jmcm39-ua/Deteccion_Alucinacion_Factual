@@ -1,0 +1,12 @@
+openai==1.77.0
+spacy==3.7.4
+transformers==4.40.1
+torch==2.3.0
+huggingface_hub==0.23.0
+requests==2.31.0
+sentencepiece==0.2.0
+sacremoses==0.1.1
+matplotlib
+pandas
+scikit-learn==1.4.2
+seaborn

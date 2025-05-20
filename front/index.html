@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Detector Alucinación</title>
+
+  <!-- Bootstrap 5.3 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+
+  <!-- Título -->
+  <div id="titulo" class="text-center">
+    Detector de Alucinación en Textos generados por IA
+  </div>
+
+  <!-- Textarea introducción del texto -->
+  <div class="mb-4 text-center">
+    <textarea id="textoInput" class="form-control mx-auto" rows="12" placeholder="Introduce el texto aquí..."></textarea>
+  </div>
+
+  <!-- Botón Enviar -->
+  <div class="mb-5 text-center">
+    <button id="enviarBtn" class="btn btn-primary">Enviar</button>
+  </div>
+
+  <!-- Resultado -->
+  <div id="resultado-final" style="display: none; justify-content: center;"></div>
+
+
+<div style="display: flex; justify-content: center;">
+<h3 id="titulo-1" class="text-center fw-semibold mt-5" style="display: none;">Comprobación del texto</h3>
+</div>
+
+  <div id="leyenda" class="d-flex align-items-center justify-content-center mb-3" style="display: none;">
+    <div id="aux-leyenda" style="display: flex; justify-content: center; flex-direction: column;">
+      <div id="leyenda-1"style="display: none; justify-content: center; padding: 5px;">
+        <span class="circulo-rojo"></span>
+        <span class="ms-2">Alucinación factual: la IA ha generado contenido que contradice hechos factuales.</span>
+      </div>
+       <div id="leyenda-2" style="display: none; justify-content: center; padding: 5px;">
+        <span class="circulo-amarillo"></span>
+        <span class="ms-2">Sin determinar: No se ha podido comprobar si está respaldado por un hecho factual.</span>
+      </div>
+      <div id="leyenda-3"style="display: none; justify-content: center; padding: 5px;">
+        <span class="circulo-verde"></span>
+        <span class="ms-2">Correcta: la IA ha generado contenido correcto.</span>
+      </div>
+    </div>
+        
+  </div>
+
+  <div id="checkbox-options" class="container my-4 d-flex justify-content-center" style="display: none;">
+    <div id="checkbox-options-aux" class="row w-100 justify-content-center" style="display: none;">
+      <div class="col-auto">
+        <label class="d-inline-flex align-items-center me-4">
+          <input type="checkbox" id="checkbox-correct" class="me-2"> Resaltar correctas
+        </label>
+      </div>
+      <div class="col-auto">
+        <label class="d-inline-flex align-items-center me-4">
+          <input type="checkbox" id="checkbox-neutral" checked class="me-2"> Resaltar sin determinar
+        </label>
+      </div>
+      <div class="col-auto">
+        <label class="d-inline-flex align-items-center">
+          <input type="checkbox" id="checkbox-contradiction" checked class="me-2"> Resaltar contradicciones
+        </label>
+      </div>
+    </div>
+  </div>
+    
+  </div>
+  
+  <div id="resultado" style="display: none;"></div>
+
+  <!-- Spinner -->
+  <div id="spinner" class="spinner" style="display: none;"></div>
+  <p id="spinner-texto" class="text-center" style="display: none;">Analizando<span class="puntos"></span></p>
+
+
+
+<div style="display: flex; justify-content: center;">
+  <h3 id="titulo-3" class="text-center fw-semibold mt-5" style="display: none;">Distribución Global</h3>
+</div>
+<!-- Gráfica resumen + datos centrado -->
+<div id="resumen-global" class="d-flex justify-content-center align-items-center gap-3 mt-4" style="display: none;">
+  <div id="gr-resumen" class="grafico text-center" style="display: none;">
+    <canvas id="graficoResumen" width="300" height="300" style="max-width: 400px;"></canvas>
+    <p>Distribución global</p>
+  </div>
+  <!-- Resumen de datos -->
+  <div id="info-resumen" class="text-start" style="max-width: 500px; padding: 50px;">
+    <p id="resumen-total"></p>
+    <p id="resumen-correctas" style="color: green;"></p>
+    <p id="resumen-neutrales" style="color: #f39c12;"></p>
+    <p id="resumen-contradicciones" style="color: red;"></p>
+  </div>
+</div>
+
+
+<div class="contenedor-mencion">
+  <img src="https://cortex.gplsi.es/wp-content/uploads/2023/01/micin-uefeder-aei_page-0001-1024x306.jpg" alt="Logo proyectos">
+  <p>
+    Esta demo es parte del proyecto CORTEX: Generación Consciente de Textos «PID2021-123956OB-I00», financiado/a por MCIN/AEI/10.13039/501100011033 y por “FEDER Una manera de hacer Europa”.<br><br>
+    También ha sido financiado por la Generalitat Valenciana (Conselleria d'Educació, Investigació, Cultura i Esport) a través del Proyecto: NL4DISMIS: Tecnologías del Lenguaje Natural para lidiar con la desinformación (CIPROM/2021/021).
+  </p>
+</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
